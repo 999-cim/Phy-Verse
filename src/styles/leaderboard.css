@@ -1,0 +1,61 @@
+/* Leaderboard styles */
+    .phy-lb-tabs { display:flex; gap:8px; margin-bottom:16px; }
+    .phy-lb-tabs .chip { flex:1; padding:10px 8px; }
+    .phy-lb-card {
+      background:var(--card); border-radius:16px; padding:16px;
+      margin-bottom:12px; box-shadow:var(--shadow-sm);
+      border:1px solid var(--border-light);
+    }
+    [data-theme="dark"] .phy-lb-card { border-color:var(--border); }
+    .phy-lb-row {
+      display:flex; align-items:center; gap:12px;
+      padding:10px 0; border-bottom:1px solid var(--border-light);
+    }
+    [data-theme="dark"] .phy-lb-row { border-color:var(--border); }
+    .phy-lb-row:last-child { border-bottom:none; }
+    .phy-lb-rank {
+      width:32px; height:32px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-weight:800; font-size:13px; flex-shrink:0;
+      background:var(--border-light); color:var(--text-secondary);
+    }
+    [data-theme="dark"] .phy-lb-rank { background:var(--border); color:var(--text-secondary); }
+    .phy-lb-rank.rank-1 {
+      background:linear-gradient(135deg,#fbbf24,#f59e0b); color:#fff;
+      box-shadow:0 2px 8px rgba(251,191,36,.4);
+    }
+    .phy-lb-rank.rank-2 { background:linear-gradient(135deg,#cbd5e1,#94a3b8); color:#fff; }
+    .phy-lb-rank.rank-3 { background:linear-gradient(135deg,#fb923c,#c2410c); color:#fff; }
+    .phy-lb-info { flex:1; min-width:0; }
+    .phy-lb-topic {
+      font-size:13px; font-weight:700; color:var(--text);
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    .phy-lb-when { font-size:11px; color:var(--muted); margin-top:2px; }
+    .phy-lb-score {
+      font-size:18px; font-weight:800; color:var(--primary);
+      font-variant-numeric:tabular-nums; flex-shrink:0;
+    }
+    .phy-lb-score-max { font-size:11px; color:var(--muted); font-weight:600; }
+    .phy-lb-empty { padding:32px 16px; text-align:center; color:var(--muted); font-size:13px; }
+    .phy-lb-stats {
+      display:grid; grid-template-columns:repeat(2,1fr);
+      gap:12px; margin-bottom:16px;
+    }
+    .phy-lb-stat {
+      background:var(--card); border-radius:14px; padding:14px;
+      text-align:center; box-shadow:var(--shadow-sm);
+      border:1px solid var(--border-light);
+    }
+    [data-theme="dark"] .phy-lb-stat { border-color:var(--border); }
+    .phy-lb-stat-num {
+      font-size:22px; font-weight:800; color:var(--primary);
+      font-variant-numeric:tabular-nums;
+    }
+    .phy-lb-stat-lbl {
+      font-size:11px; color:var(--muted); margin-top:4px;
+      font-weight:600; text-transform:uppercase; letter-spacing:0.03em;
+    }
+    @media(min-width:720px) {
+      .phy-lb-stats { grid-template-columns:repeat(4,1fr); }
+    }

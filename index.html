@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-HK" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0f172a" />
+  <link rel="icon" href="data:," />
+  <title>PhyVerse — 香港中學物理科一站式互動學習平台</title>
+
+  <link rel="stylesheet" href="/src/styles/index.css" />
+  <link rel="stylesheet" href="/src/index.css" />
+</head>
+<body>
+  <canvas id="confettiCanvas"></canvas>
+
+  <header class="header" id="phy-header"></header>
+
+  <main class="main" id="phy-main-container">
+    <section id="panel-practice"></section>
+    <section id="panel-formulas" style="display:none;"></section>
+    <section id="panel-report" style="display:none;"></section>
+    <section id="panel-library" style="display:none;"></section>
+  </main>
+
+  <nav class="tabbar" id="phy-tabbar"></nav>
+  <div id="toast"></div>
+  <div id="phylab-root"></div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
