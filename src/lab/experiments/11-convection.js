@@ -34,6 +34,43 @@ function toLambertGlass(mat, opacity) {
   });
 }
 
+/* Merge the thermometer's 16 shaft ticks into one mesh per material.
+   The shared thermometer helper is not modified; this only touches the
+   returned group inside the convection experiment. */
+function mergeThermometerTicks(group) {
+  const buckets = new Map();
+  group.traverse((o) => {
+    if (!o.isMesh || o.parent !== group) return;
+    if (!o.geometry || o.geometry.type !== 'BoxGeometry') return;
+    const mat = o.material;
+    if (!mat || !mat.isMeshBasicMaterial) return;
+    const hex = mat.color && mat.color.getHexString();
+    if (hex !== 'd92d20' && hex !== '1e293b') return;
+    if (!buckets.has(mat.uuid)) buckets.set(mat.uuid, { mat, meshes: [] });
+    buckets.get(mat.uuid).meshes.push(o);
+  });
+
+  for (const { mat, meshes } of buckets.values()) {
+    if (meshes.length < 2) continue;
+    const geos = [];
+    for (const mesh of meshes) {
+      mesh.updateMatrix();
+      geos.push(mesh.geometry.clone().applyMatrix4(mesh.matrix));
+    }
+    const merged = mergeGeometries(geos, false);
+    geos.forEach((geo) => geo.dispose());
+    if (!merged) continue;
+
+    const mergedMesh = new THREE.Mesh(merged, mat);
+    mergedMesh.castShadow = false;
+    group.add(mergedMesh);
+    for (const mesh of meshes) {
+      group.remove(mesh);
+      mesh.geometry.dispose();
+    }
+  }
+}
+
 export default {
   id:'convection',
   cat:'heat',
@@ -136,6 +173,7 @@ export default {
       o.material = thermoGlassMat;
     });
     g.add(this._thermo.group);
+    mergeThermometerTicks(this._thermo.group);
 
     /* 數位電源 */
     const psu = createPSU({ w: 1.3, h: 1.0, d: 0.9, screenW: 1.0, screenH: 0.55 });
