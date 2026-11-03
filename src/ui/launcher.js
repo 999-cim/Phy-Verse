@@ -64,13 +64,30 @@ export function initLauncher() {
   }
 
   document.querySelectorAll('[data-phylab-choice]').forEach((btn) => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', async () => {
       const choice = btn.getAttribute('data-phylab-choice');
       if (choice === 'practice') {
         hideAll();
       } else if (choice === 'experiment') {
-        showScreen('selector');
-        renderSelector();
+        if (btn.dataset.loading === '1') return;
+        btn.dataset.loading = '1';
+        btn.setAttribute('aria-busy', 'true');
+        try {
+          /* The lab import starts in the background after UI boot. If the user
+             clicks before it finishes, wait for registration instead of rendering
+             an empty selector. */
+          if (window.__phyLabReady) await window.__phyLabReady;
+          showScreen('selector');
+          renderSelector();
+        } catch (err) {
+          console.error('[PhyVerse] Could not load lab:', err);
+          if (typeof window.PHY_toast === 'function') {
+            window.PHY_toast('3D 實驗室載入失敗，請重新整理頁面。', 'warn');
+          }
+        } finally {
+          delete btn.dataset.loading;
+          btn.removeAttribute('aria-busy');
+        }
       }
     });
   });
