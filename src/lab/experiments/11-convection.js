@@ -9,6 +9,30 @@ import {
   sliderHTML, bindSliders, chkHTML, bindChks, renderSidebar, renderHUD, updatePtCount,
   refreshPlayBtn, populateGraphSelect, drawGraph, setCamera3D, setViewMode,
 } from '../engine.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+
+function toStandard(mat) {
+  return new THREE.MeshStandardMaterial({
+    color: mat.color ? mat.color.clone() : 0xffffff,
+    metalness: mat.metalness ?? 0,
+    roughness: mat.roughness ?? 0.5,
+    envMapIntensity: mat.envMapIntensity ?? 1,
+    transparent: !!mat.transparent,
+    opacity: mat.opacity ?? 1,
+    side: mat.side,
+    depthWrite: mat.depthWrite,
+  });
+}
+
+function toLambertGlass(mat, opacity) {
+  return new THREE.MeshLambertMaterial({
+    color: mat.color ? mat.color.clone() : 0xffffff,
+    transparent: true,
+    opacity: opacity ?? mat.opacity ?? 0.3,
+    side: mat.side ?? THREE.DoubleSide,
+    depthWrite: false,
+  });
+}
 
 export default {
   id:'convection',
@@ -51,35 +75,97 @@ export default {
 
     init() {
     const g = root3d;
-    addGround();
+    const ground = addGround();
 
     /* 玻璃水缸 + 鋁合金框 + 半透明水體 */
     const tankGroup = new THREE.Group();
     const tank = rbox(3, 3, 1.4, 0.04, MAT.glassThin(), 3);
     tank.position.y = 1.5;
+    tank.material = toLambertGlass(tank.material, 0.24);
     tankGroup.add(tank);
     const water = rbox(2.9, 2.7, 1.3, 0.04, MAT.water(), 3);
     water.position.y = 1.40;
+    water.material = toLambertGlass(water.material, 0.35);
     tankGroup.add(water);
+
+    /* 鋁框：先建 8 根，再合併成 1 個 static mesh，材質改 Standard */
+    const frameMat = new THREE.MeshStandardMaterial({
+      color: 0xd5dbe2, metalness: 0.9, roughness: 0.28, envMapIntensity: 1.1
+    });
+    const frameBars = [];
     for (const sx of [-1.5, 1.5]) for (const sz of [-0.7, 0.7]) {
-      tankGroup.add(makeAluFrameBar(new THREE.Vector3(sx, 0.04, sz), new THREE.Vector3(sx, 2.96, sz), 0.035));
+      frameBars.push(makeAluFrameBar(new THREE.Vector3(sx, 0.04, sz), new THREE.Vector3(sx, 2.96, sz), 0.035));
     }
     for (const y of [0.04, 2.96]) for (const sz of [-0.7, 0.7]) {
-      tankGroup.add(makeAluFrameBar(new THREE.Vector3(-1.5, y, sz), new THREE.Vector3(1.5, y, sz), 0.028));
+      frameBars.push(makeAluFrameBar(new THREE.Vector3(-1.5, y, sz), new THREE.Vector3(1.5, y, sz), 0.028));
+    }
+    const frameGeos = [];
+    for (const bar of frameBars) {
+      bar.updateMatrix();
+      frameGeos.push(bar.geometry.clone().applyMatrix4(bar.matrix));
+    }
+    const mergedFrameGeo = mergeGeometries(frameGeos, false);
+    if (mergedFrameGeo) {
+      const frameMesh = new THREE.Mesh(mergedFrameGeo, frameMat);
+      frameMesh.castShadow = false;
+      tankGroup.add(frameMesh);
+      frameGeos.forEach((geo) => geo.dispose());
+      frameBars.forEach((bar) => { bar.geometry.dispose(); bar.material.dispose(); });
+    } else {
+      /* 極端 fallback：保留 8 根，仍用同一 Standard 材質 */
+      frameGeos.forEach((geo) => geo.dispose());
+      frameBars.forEach((bar) => {
+        bar.geometry.dispose();
+        bar.material.dispose();
+        bar.material = frameMat;
+        bar.castShadow = false;
+        tankGroup.add(bar);
+      });
     }
     g.add(tankGroup);
     this._tank = tank;
     this._tankWater = water;
     this._thermo = createLabThermometer(1.18, 0.18, 0.0, 0xff3b30, 1.9);
+    let thermoGlassMat = null;
+    this._thermo.group.traverse((o) => {
+      if (!o.isMesh) return;
+      const mats = Array.isArray(o.material) ? o.material : [o.material];
+      const glass = mats.find((mm) => mm && mm.isMeshPhysicalMaterial && (mm.transmission || 0) > 0);
+      if (!glass) return;
+      if (!thermoGlassMat) thermoGlassMat = toLambertGlass(glass, 0.34);
+      o.material = thermoGlassMat;
+    });
     g.add(this._thermo.group);
 
     /* 數位電源 */
     const psu = createPSU({ w: 1.3, h: 1.0, d: 0.9, screenW: 1.0, screenH: 0.55 });
     psu.group.position.set(-3.2, 0, 0.9);
+    psu.group.traverse((o) => {
+      if (!o.isMesh) return;
+      const mats = Array.isArray(o.material) ? o.material : [o.material];
+      if (!mats.some((mm) => mm && mm.isMeshPhysicalMaterial)) return;
+      /* 保留 3 個鋁旋鈕的 Physical，其餘 PSU 件改 Standard */
+      if (o.geometry && o.geometry.type === 'CylinderGeometry' &&
+          mats.some((mm) => mm.color && mm.color.getHexString() === 'd5dbe2')) return;
+      o.material = toStandard(mats[0]);
+    });
     g.add(psu.group);
     this._psuCtx = psu.ctx; this._psuTex = psu.tex; this._psuScreen = psu.screen;
-    g.add(createWire([[-2.8, 0.45, 0.6], [-1.9, 0.4, 0.3], [-1.0, 0.2, 0]], 0xcc3333, 0.035));
-    g.add(createWire([[-3.4, 0.45, 0.6], [-2.1, 0.4, -0.3], [-1.0, 0.2, 0]], 0x22282f, 0.035));
+    const wireRed = createWire([[-2.8, 0.45, 0.6], [-1.9, 0.4, 0.3], [-1.0, 0.2, 0]], 0xcc3333, 0.035);
+    wireRed.material = toStandard(wireRed.material);
+    g.add(wireRed);
+    const wireBlack = createWire([[-3.4, 0.45, 0.6], [-2.1, 0.4, -0.3], [-1.0, 0.2, 0]], 0x22282f, 0.035);
+    wireBlack.material = toStandard(wireBlack.material);
+    g.add(wireBlack);
+
+    /* 桌面與地面：只替換 convection 這份 ground group 的材質 */
+    const groundTop = ground.userData.topMat;
+    const groundFloor = ground.userData.floorMat;
+    ground.traverse((o) => {
+      if (!o.isMesh) return;
+      if (o.material === groundTop) o.material = toStandard(groundTop);
+      else if (o.material === groundFloor) o.material = toStandard(groundFloor);
+    });
 
     /* Heater at bottom left */
     const htr = new THREE.Mesh(
@@ -101,7 +187,7 @@ export default {
     g.add(ice);
 
     /* Particles flowing along a closed convection loop */
-    const N = 120;
+    const N = 80;
     const geo = new THREE.BufferGeometry();
     const pos = new Float32Array(N * 3);
     const u = new Float32Array(N);
@@ -119,6 +205,12 @@ export default {
     });
     this._particles = { geo, u, N, mat };
     g.add(new THREE.Points(geo, mat));
+
+    /* Shadow budget: only the tank, heater and ice remain casters */
+    g.traverse((o) => { if (o.isMesh) o.castShadow = false; });
+    tank.castShadow = true;
+    htr.castShadow = true;
+    ice.castShadow = true;
   },
 
   /* Rectangle loop: up left, across top, down right, across bottom */
