@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@netlify/identity": "^2.0.0",
     "tesseract.js": "5.0.4",
     "three": "0.160.0"
   },

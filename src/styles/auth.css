@@ -1,0 +1,114 @@
+.phy-auth-bar {
+  position: relative;
+  z-index: 960;
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 6px 16px 0;
+  min-height: 34px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 8px;
+}
+.phy-auth-login,
+.phy-auth-logout {
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 11px;
+  box-shadow: var(--shadow-sm);
+}
+.phy-auth-login:hover,
+.phy-auth-logout:hover { border-color: var(--primary); color: var(--primary); }
+.phy-auth-login:disabled { opacity: .55; cursor: not-allowed; }
+.phy-auth-login svg { width: 16px; height: 16px; flex-shrink: 0; }
+.phy-auth-chip {
+  height: 32px;
+  max-width: 100%;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 6px 0 4px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--card);
+  box-shadow: var(--shadow-sm);
+}
+.phy-auth-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.phy-auth-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.phy-auth-email {
+  max-width: 190px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.phy-auth-logout { height: 26px; padding: 0 8px; border: none; background: transparent; box-shadow: none; color: var(--text-secondary); }
+@media (max-width: 480px) {
+  .phy-auth-bar { padding: 4px 10px 0; }
+  .phy-auth-email { max-width: 120px; }
+}
+
+/* On the full-screen launcher, move the auth chip into the free top-left
+   corner so it does not cover the centered brand mark. */
+@supports selector(:has(*)) {
+  body:has(#phylabLauncher:not(.hidden)) .phy-auth-bar {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    right: auto;
+    max-width: none;
+    padding: 0;
+  }
+}
+
+/* Compact mode over the full-screen launcher: keep the auth control clear of
+   the launcher's top toolbar and centered brand; the full email/logout chip
+   is shown in the main app. */
+@supports selector(:has(*)) {
+  body:has(#phylabLauncher:not(.hidden)) .phy-auth-bar {
+    top: 58px;
+    left: 10px;
+    right: auto;
+    max-width: none;
+    padding: 0;
+  }
+  body:has(#phylabLauncher:not(.hidden)) .phy-auth-login {
+    width: 32px;
+    padding: 0;
+    justify-content: center;
+  }
+  body:has(#phylabLauncher:not(.hidden)) .phy-auth-login span { display: none; }
+  body:has(#phylabLauncher:not(.hidden)) .phy-auth-chip {
+    width: 32px;
+    padding: 0;
+    justify-content: center;
+  }
+  body:has(#phylabLauncher:not(.hidden)) .phy-auth-email,
+  body:has(#phylabLauncher:not(.hidden)) .phy-auth-logout { display: none; }
+}
+
+.phy-auth-bar.is-hidden { display: none; }

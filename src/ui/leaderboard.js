@@ -288,6 +288,11 @@ export function initLeaderboard() {
   injectPanel();
   hookExpScore();
   hookLang();
+  window.addEventListener('phyverse:data-sync', () => {
+    const panel = $('panel-leaderboard');
+    if (panel && panel.classList.contains('active')) renderPanel(currentCat);
+    if ($('p9LbBackdrop') && $('p9LbBackdrop').classList.contains('show')) renderModal(modalCat);
+  });
   console.log('[Part 8] Leaderboard + Fixes ready');
 }
 

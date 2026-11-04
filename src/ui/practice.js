@@ -1194,6 +1194,19 @@ function PHY_esc(s) {
         if (PHY_STATE.qs.length > 0) {
           PHY_renderQuestions();
         }
+
+        /* Netlify Identity cloud merge can change history after boot. */
+        window.addEventListener('phyverse:data-sync', function () {
+          PHY_STATE.history = loadHistory();
+          PHY_STATE.notes = loadNotes();
+          PHY_updateStreakBadge();
+          if (PHY_$('panel-report') && PHY_$('panel-report').classList.contains('active')) {
+            PHY_renderReport();
+          }
+          if (PHY_$('panel-library') && PHY_$('panel-library').classList.contains('active')) {
+            PHY_renderLibrary();
+          }
+        });
       }
 
 
