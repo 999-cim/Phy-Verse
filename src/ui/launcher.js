@@ -46,7 +46,7 @@ export function initLauncher() {
           <span class="phylab-choice-tag">3D Simulator</span>
         </button>
       </div>
-      <div class="phylab-footer">PhyVerse v3.0 - Free forever - No account needed</div>
+      <div class="phylab-footer"><span>PhyVerse v3.0 - Free forever - No account needed</span><a class="phylab-privacy-link" href="/privacy.html">隐私政策</a></div>
     </div>`;
   root.appendChild(wrap);
 

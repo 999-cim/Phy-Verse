@@ -241,3 +241,188 @@
     .phyexp-root *::after {
       box-sizing: border-box;
     }
+
+/* ---------- BOOK-PAGE SIDEBAR ---------- */
+.phyexp-root #sidebar {
+  background: #f5f0e3;
+  color: #3a3226;
+  border-right: 1px solid #c9bfa5;
+  box-shadow: 4px 0 16px rgba(58, 45, 28, .14);
+}
+.phyexp-root #sidebar::-webkit-scrollbar-thumb {
+  background: #c9bda6;
+  border-color: #f5f0e3;
+}
+.phyexp-root #sidebar .card {
+  background: #f5f0e3;
+  border-color: #d2c6b0;
+  border-radius: 5px 10px 6px 8px;
+  color: #3a3226;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .46);
+}
+.phyexp-root #sidebar .card-head { border-bottom: 1px solid rgba(201, 191, 165, .45); padding-bottom: 6px; }
+.phyexp-root #sidebar .card h3 {
+  color: #7b6a50;
+  letter-spacing: .13em;
+}
+.phyexp-root #sidebar .hint-text { color: #70634f; }
+.phyexp-root #sidebar .hint-text b { color: #7a4a2c; }
+.phyexp-root #sidebar .badge {
+  background: #e9dfca;
+  border-color: #d2c6b0;
+  color: #6f6049;
+}
+.phyexp-root #sidebar .badge.ok { background: #dfe5d0; border-color: #b9c4a2; color: #4d5d39; }
+.phyexp-root #sidebar .badge.on { background: #ecd9b8; border-color: #d4b88b; color: #755127; }
+
+.phyexp-root .sidebar-pagehead {
+  flex: 0 0 auto;
+  padding: 2px 2px 12px;
+  border-bottom: 1px solid #c9bfa5;
+}
+.phyexp-root .sidebar-pagehead-kicker {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  color: #907b5e;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  white-space: nowrap;
+}
+.phyexp-root .sidebar-pagehead-kicker span:last-child { color: #a18b6c; font-weight: 600; letter-spacing: .04em; }
+.phyexp-root .sidebar-pagehead h2 {
+  margin: 7px 0 0;
+  color: #322b21;
+  font-family: Georgia, "Songti TC", "Noto Serif TC", "Kaiti TC", serif;
+  font-size: 21px;
+  font-weight: 500;
+  line-height: 1.32;
+  letter-spacing: .015em;
+}
+
+/* Ink sliders / checkboxes (no purple highlight) */
+.phyexp-root #sidebar .slider-label { color: #5f5342; }
+.phyexp-root #sidebar .slider-val { color: #3a3226; }
+.phyexp-root #sidebar input[type=range] { background: #d8ccb6; }
+.phyexp-root #sidebar input[type=range]::-webkit-slider-thumb {
+  background: #3a3226;
+  border: 2px solid #f5f0e3;
+  box-shadow: 0 0 0 1px #3a3226, 0 2px 5px rgba(58, 50, 38, .22);
+}
+.phyexp-root #sidebar input[type=range]::-moz-range-thumb {
+  background: #3a3226;
+  border: 2px solid #f5f0e3;
+  box-shadow: 0 0 0 1px #3a3226;
+}
+.phyexp-root #sidebar input[type=range]:focus-visible { outline: 2px solid #9b7b4c; outline-offset: 3px; }
+.phyexp-root #sidebar .lock-btn { color: #a18b6c; }
+.phyexp-root #sidebar .lock-btn:hover { color: #3a3226; }
+.phyexp-root #sidebar .lock-btn.on { color: #8a5a32; }
+.phyexp-root #sidebar .chk-item { color: #70634f; }
+.phyexp-root #sidebar .chk-item:hover { background: #e9dfca; }
+.phyexp-root #sidebar .chk-item.on { color: #322b21; }
+.phyexp-root #sidebar .chk-box {
+  border-color: #a99a80;
+  background: #faf6ec;
+  color: transparent;
+}
+.phyexp-root #sidebar .chk-item.on .chk-box {
+  background: #3a3226;
+  border-color: #3a3226;
+  color: #f5f0e3;
+}
+.phyexp-root #sidebar .btn {
+  background: #efe6d2;
+  border-color: #d2c6b0;
+  color: #3a3226;
+}
+.phyexp-root #sidebar .btn:hover { background: #e5d9c0; border-color: #b9a98e; }
+.phyexp-root #sidebar .btn.primary { background: #3a3226; border-color: #3a3226; color: #f5f0e3; }
+.phyexp-root #sidebar .btn.primary:hover { background: #4a4031; }
+.phyexp-root #sidebar select { background: #faf6ec; border-color: #d2c6b0; color: #3a3226; }
+
+/* The dark viewport reads as a glass window set into the paper page. */
+.phyexp-root #viewport::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 24px;
+  z-index: 4;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(28, 20, 11, .68) 0%, rgba(28, 20, 11, .28) 42%, transparent 100%);
+  box-shadow: inset 8px 0 16px rgba(20, 14, 8, .35);
+}
+
+/* Dark theme: dark brown paper, still paper. */
+html[data-theme="dark"] .phyexp-root #sidebar {
+  background: #241f1a;
+  color: #e8ddc7;
+  border-right-color: #4a3f32;
+  box-shadow: 4px 0 16px rgba(0, 0, 0, .32);
+}
+html[data-theme="dark"] .phyexp-root #sidebar::-webkit-scrollbar-thumb { background: #5a4b3b; border-color: #241f1a; }
+html[data-theme="dark"] .phyexp-root #sidebar .card {
+  background: #2c251f;
+  border-color: #4a3f32;
+  color: #e8ddc7;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05);
+}
+html[data-theme="dark"] .phyexp-root #sidebar .card-head { border-color: #4a3f32; }
+html[data-theme="dark"] .phyexp-root #sidebar .card h3 { color: #b9a88a; }
+html[data-theme="dark"] .phyexp-root #sidebar .hint-text { color: #b9aa91; }
+html[data-theme="dark"] .phyexp-root #sidebar .hint-text b { color: #e0b47b; }
+html[data-theme="dark"] .phyexp-root #sidebar .badge { background: #3a3128; border-color: #4a3f32; color: #c7b89d; }
+html[data-theme="dark"] .phyexp-root #sidebar .badge.ok { background: #2d3a2d; border-color: #4b6048; color: #a9c89c; }
+html[data-theme="dark"] .phyexp-root #sidebar .badge.on { background: #3d3221; border-color: #66512f; color: #e0bf83; }
+html[data-theme="dark"] .phyexp-root .sidebar-pagehead { border-color: #4a3f32; }
+html[data-theme="dark"] .phyexp-root .sidebar-pagehead-kicker { color: #a18b6c; }
+html[data-theme="dark"] .phyexp-root .sidebar-pagehead-kicker span:last-child { color: #b9a88a; }
+html[data-theme="dark"] .phyexp-root .sidebar-pagehead h2 { color: #f0e3ca; }
+html[data-theme="dark"] .phyexp-root #sidebar .slider-label { color: #c7b89d; }
+html[data-theme="dark"] .phyexp-root #sidebar .slider-val { color: #e8d8b9; }
+html[data-theme="dark"] .phyexp-root #sidebar input[type=range] { background: #4b3f32; }
+html[data-theme="dark"] .phyexp-root #sidebar input[type=range]::-webkit-slider-thumb {
+  background: #d9c7a8;
+  border-color: #2c251f;
+  box-shadow: 0 0 0 1px #d9c7a8, 0 2px 5px rgba(0, 0, 0, .35);
+}
+html[data-theme="dark"] .phyexp-root #sidebar input[type=range]::-moz-range-thumb { background: #d9c7a8; border-color: #2c251f; box-shadow: 0 0 0 1px #d9c7a8; }
+html[data-theme="dark"] .phyexp-root #sidebar .lock-btn { color: #a18b6c; }
+html[data-theme="dark"] .phyexp-root #sidebar .lock-btn:hover { color: #f0e3ca; }
+html[data-theme="dark"] .phyexp-root #sidebar .lock-btn.on { color: #e0b47b; }
+html[data-theme="dark"] .phyexp-root #sidebar .chk-item { color: #b9aa91; }
+html[data-theme="dark"] .phyexp-root #sidebar .chk-item:hover { background: #3a3128; }
+html[data-theme="dark"] .phyexp-root #sidebar .chk-item.on { color: #f0e3ca; }
+html[data-theme="dark"] .phyexp-root #sidebar .chk-box { border-color: #8f7d63; background: #2c251f; }
+html[data-theme="dark"] .phyexp-root #sidebar .chk-item.on .chk-box { background: #d9c7a8; border-color: #d9c7a8; color: #2c251f; }
+html[data-theme="dark"] .phyexp-root #sidebar .btn { background: #3a3128; border-color: #4a3f32; color: #e8ddc7; }
+html[data-theme="dark"] .phyexp-root #sidebar .btn:hover { background: #4a3f32; border-color: #6a5843; }
+html[data-theme="dark"] .phyexp-root #sidebar .btn.primary { background: #d9c7a8; border-color: #d9c7a8; color: #2c251f; }
+html[data-theme="dark"] .phyexp-root #sidebar select { background: #3a3128; border-color: #4a3f32; color: #e8ddc7; }
+html[data-theme="dark"] .phyexp-root #viewport::before {
+  background: linear-gradient(90deg, rgba(0, 0, 0, .72) 0%, rgba(0, 0, 0, .34) 42%, transparent 100%);
+  box-shadow: inset 8px 0 16px rgba(0, 0, 0, .45);
+}
+
+@media (max-width: 700px) {
+  .phyexp-root #sidebar {
+    border-right: 0;
+    border-bottom: 1px solid #c9bfa5;
+    box-shadow: 0 4px 12px rgba(58, 45, 28, .14);
+  }
+  html[data-theme="dark"] .phyexp-root #sidebar { border-bottom-color: #4a3f32; }
+  .phyexp-root #sidebar > .sidebar-pagehead {
+    flex: 0 0 176px;
+    width: 176px;
+    height: 158px;
+    overflow: hidden;
+    padding: 12px 12px 10px;
+    border: 1px solid #d2c6b0;
+    border-radius: 5px 9px 6px 8px;
+    background: #f5f0e3;
+  }
+  .phyexp-root #sidebar > .sidebar-pagehead h2 { font-size: 18px; }
+  html[data-theme="dark"] .phyexp-root #sidebar > .sidebar-pagehead { background: #2c251f; border-color: #4a3f32; }
+}

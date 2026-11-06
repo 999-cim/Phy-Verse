@@ -15,6 +15,32 @@ function isEn() {
   return !!((window.PhyVerse && window.PhyVerse.lang === 'en') || document.documentElement.lang === 'en');
 }
 
+const PARTS = [
+  { id: 'gas', numZh: '一', numEn: 'I', nameZh: '氣體定律', nameEn: 'Gases' },
+  { id: 'heat', numZh: '二', numEn: 'II', nameZh: '熱學', nameEn: 'Heat' },
+  { id: 'mech', numZh: '三', numEn: 'III', nameZh: '力學', nameEn: 'Mechanics' },
+  { id: 'elec', numZh: '四', numEn: 'IV', nameZh: '電學', nameEn: 'Electricity' },
+  { id: 'optics', numZh: '五', numEn: 'V', nameZh: '光學', nameEn: 'Optics' },
+  { id: 'waves', numZh: '六', numEn: 'VI', nameZh: '波動', nameEn: 'Waves' },
+  { id: 'misc', numZh: '七', numEn: 'VII', nameZh: '其他', nameEn: 'Miscellaneous' },
+];
+
+function openWithPageTurn(exp, row) {
+  const selector = el('phylabSelector');
+  if (!selector || selector.classList.contains('is-turning')) return;
+
+  row.classList.add('is-selected');
+  selector.classList.add('is-turning');
+
+  window.setTimeout(() => {
+    selector.classList.remove('is-turning');
+    row.classList.remove('is-selected');
+    if (window.PhyVerse && typeof window.PhyVerse.openExperiment === 'function') {
+      window.PhyVerse.openExperiment(exp.id);
+    }
+  }, 470);
+}
+
 function esc(s) {
   const str = String(s === undefined || s === null ? '' : s);
   let out = '';
@@ -36,6 +62,8 @@ export function showScreen(name) {
     if (key === name) node.classList.remove('hidden');
     else node.classList.add('hidden');
   });
+  const toolbar = el('phylabToolbar');
+  if (toolbar) toolbar.classList.toggle('is-selector-hidden', name === 'selector');
 }
 
 export function hideAll() {
@@ -92,42 +120,60 @@ export function defaultPreviewSVG(exp, index) {
 export function renderSelector() {
   const grid = el('phylabExpGrid');
   if (!grid) return;
+
+  const selector = el('phylabSelector');
+  if (selector) selector.classList.remove('is-turning');
+
   grid.innerHTML = '';
   const list = (window.PhyVerse && window.PhyVerse.experiments) ? window.PhyVerse.experiments : [];
   const en = isEn();
+  const countEl = el('phylabBookCount');
+  if (countEl) countEl.textContent = en ? `${list.length} experiments` : `${list.length} 個實驗`;
 
-  for (let i = 0; i < list.length; i++) {
-    ((exp, idx) => {
-      const card = document.createElement('button');
-      card.className = 'phylab-exp-card';
-      card.type = 'button';
-      card.setAttribute('data-exp-id', exp.id);
+  let pageNo = 0;
 
+  PARTS.forEach((part) => {
+    const items = list.filter((exp) => (exp.cat || 'misc') === part.id);
+    if (!items.length) return;
+
+    const section = document.createElement('section');
+    section.className = 'phylab-toc-part';
+
+    const head = document.createElement('div');
+    head.className = 'phylab-toc-part-head';
+    const partLabel = en ? `Part ${part.numEn}` : `第${part.numZh}部`;
+    const partName = en ? part.nameEn : part.nameZh;
+    head.innerHTML = ''
+      + '<span class="phylab-toc-part-no">' + esc(partLabel) + '</span>'
+      + '<h3>' + esc(partName) + '</h3>'
+      + '<span class="phylab-toc-part-count">' + String(items.length).padStart(2, '0') + '</span>';
+    section.appendChild(head);
+
+    items.forEach((exp) => {
+      pageNo += 1;
+      const page = String(pageNo).padStart(2, '0');
       const title = en ? (exp.title_en || exp.title_zh || exp.id) : (exp.title_zh || exp.title_en || exp.id);
       const desc = en ? (exp.desc_en || exp.desc_zh || '') : (exp.desc_zh || exp.desc_en || '');
-      const preview = (typeof exp.previewSVG === 'function') ? exp.previewSVG() : defaultPreviewSVG(exp, idx);
-      const catLabel = (exp.cat || '3D LAB').toUpperCase();
-      const startLabel = en ? 'Start ' : '開始 ';
 
-      card.innerHTML = ''
-        + '<div class="phylab-exp-preview">' + preview + '</div>'
-        + '<div class="phylab-exp-title">' + esc(title) + '</div>'
-        + '<div class="phylab-exp-subtitle">' + esc(desc) + '</div>'
-        + '<div class="phylab-exp-meta">'
-        +   '<span class="phylab-exp-cat-tag">' + esc(catLabel) + '</span>'
-        +   '<div class="phylab-exp-start">' + startLabel
-        +     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>'
-        +   '</div>'
-        + '</div>';
+      const row = document.createElement('button');
+      row.className = 'phylab-toc-row';
+      row.type = 'button';
+      row.setAttribute('data-exp-id', exp.id);
+      row.setAttribute('aria-label', (en ? `Page ${page}: ` : `第 ${page} 頁：`) + title);
+      row.innerHTML = ''
+        + '<span class="phylab-toc-page">' + page + '</span>'
+        + '<span class="phylab-toc-main">'
+        +   '<span class="phylab-toc-title">' + esc(title) + '</span>'
+        +   '<span class="phylab-toc-desc">' + esc(desc) + '</span>'
+        + '</span>'
+        + '<span class="phylab-toc-arrow" aria-hidden="true">→</span>';
 
-      card.addEventListener('click', () => {
-        if (window.PhyVerse && typeof window.PhyVerse.openExperiment === 'function') {
-          window.PhyVerse.openExperiment(exp.id);
-        }
-      });
-      grid.appendChild(card);
-    })(list[i], i);
-  }
+      row.addEventListener('click', () => openWithPageTurn(exp, row));
+      section.appendChild(row);
+    });
+
+    grid.appendChild(section);
+  });
 }
 
 export function openExperiment(id) {
@@ -183,15 +229,21 @@ function initSelectorShell() {
   selector.className = 'phylab-overlay hidden';
   selector.innerHTML = `
     <div class="phylab-selector-content">
-      <div class="phylab-selector-head">
-        <button class="phylab-back" data-phylab-nav="launcher" type="button">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;"><polyline points="15 18 9 12 15 6"/></svg>
-          <span>返回</span>
-        </button>
-        <h2>選擇實驗</h2>
-        <div style="width:80px;"></div>
+      <div class="phylab-book" id="phylabBook">
+        <header class="phylab-book-head">
+          <p class="phylab-book-kicker">PHYVERSE · 3D PHYSICS LAB</p>
+          <h2 class="phylab-book-title">物理之書</h2>
+          <p class="phylab-book-sub">
+            <span>全書目錄 · <span id="phylabBookCount">15 個實驗</span></span>
+            <span>逐頁翻閱，選一個實驗開始</span>
+          </p>
+        </header>
+        <div class="phylab-book-toc" id="phylabExpGrid"></div>
+        <footer class="phylab-book-foot">
+          <button class="phylab-bookmark" data-phylab-nav="launcher" type="button">返回啟動器</button>
+          <span class="phylab-book-folio">PhyVerse · 3D Lab · 2026</span>
+        </footer>
       </div>
-      <div class="phylab-exp-grid" id="phylabExpGrid"></div>
     </div>`;
   root.appendChild(selector);
 

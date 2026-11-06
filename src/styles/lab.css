@@ -83,66 +83,259 @@
       padding: 3px 8px; border-radius: 6px;
       background: rgba(129,140,248,.2); color: #c7d2fe; position: relative;
     }
-    .phylab-footer { font-size: 11px; color: rgba(165,180,252,.5); letter-spacing: .05em; }
+    .phylab-footer { font-size: 11px; color: rgba(165,180,252,.5); letter-spacing: .05em; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+    .phylab-footer > span { text-align: center; }
 
-    #phylabSelector { background: #f8fafc; align-items: flex-start; overflow-y: auto; }
-    [data-theme="dark"] #phylabSelector { background: #0f172a; }
-    .phylab-selector-content { max-width: 1040px; width: 100%; margin: 0 auto; padding: 24px 20px 48px; }
-    .phylab-selector-head {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0;
+    #phylabSelector {
+      background:
+        radial-gradient(circle at 8% 0%, rgba(164, 145, 105, .18), transparent 28rem),
+        radial-gradient(circle at 100% 20%, rgba(120, 100, 70, .10), transparent 30rem),
+        #eae4d0;
+      align-items: flex-start;
+      overflow-y: auto;
+      color: #27382e;
     }
-    [data-theme="dark"] .phylab-selector-head { border-color: #334155; }
-    .phylab-selector-head h2 { font-size: 22px; font-weight: 800; color: #1e293b; letter-spacing: -.02em; }
-    [data-theme="dark"] .phylab-selector-head h2 { color: #e2e8f0; }
-    .phylab-back {
-      background: #fff; border: 1px solid #e2e8f0; color: #475569;
-      padding: 8px 14px; border-radius: 10px; font-size: 13px; font-weight: 600;
-      cursor: pointer; font-family: inherit; transition: all .15s;
-      display: inline-flex; align-items: center; gap: 6px;
+    .phylab-selector-content {
+      width: min(920px, 100%);
+      margin: 0 auto;
+      padding: 28px 20px 56px;
     }
-    [data-theme="dark"] .phylab-back { background: #1e293b; border-color: #334155; color: #cbd5e1; }
-    .phylab-back:hover { background: #eef2ff; color: #4f46e5; border-color: #c7d2fe; }
-    .phylab-exp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; }
-    .phylab-exp-card {
-      background: #fff; border-radius: 20px; padding: 20px; border: 1px solid #e2e8f0;
-      cursor: pointer; font-family: inherit; color: inherit; text-align: left;
-      transition: all .25s cubic-bezier(.4,0,.2,1);
-      display: flex; flex-direction: column;
-      box-shadow: 0 1px 3px rgba(15,23,42,.04);
-      position: relative; overflow: hidden;
+    .phylab-book {
+      position: relative;
+      padding: 34px 38px 26px 44px;
+      border: 1px solid #c9bfa5;
+      border-radius: 3px 12px 8px 4px;
+      background-color: #f5f0e3;
+      background-image: linear-gradient(rgba(120, 100, 70, .045) 1px, transparent 1px);
+      background-size: 100% 28px;
+      box-shadow: 0 24px 60px rgba(62, 48, 28, .18), inset 0 1px 0 rgba(255, 255, 255, .72);
+      transform-origin: left center;
     }
-    [data-theme="dark"] .phylab-exp-card { background: #1e293b; border-color: #334155; color: #e2e8f0; }
-    .phylab-exp-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(15,23,42,.12); border-color: #c7d2fe; }
-    .phylab-exp-preview {
-      height: 110px; background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
-      border-radius: 12px; margin-bottom: 14px;
-      display: flex; align-items: center; justify-content: center;
-      overflow: hidden; position: relative;
+    .phylab-book::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 10px;
+      bottom: 10px;
+      width: 8px;
+      border-radius: 3px 0 0 3px;
+      background: linear-gradient(90deg, #d8cdb5 0%, #b9ac90 55%, #d8cdb5 100%);
+      box-shadow: inset -1px 0 0 rgba(80, 60, 35, .14);
     }
-    [data-theme="dark"] .phylab-exp-preview { background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); }
-    .phylab-exp-preview svg { width: 100%; height: 100%; }
-    .phylab-exp-title { font-size: 15px; font-weight: 800; color: #1e293b; margin-bottom: 6px; letter-spacing: -.01em; }
-    [data-theme="dark"] .phylab-exp-title { color: #e2e8f0; }
-    .phylab-exp-subtitle { font-size: 12px; color: #64748b; margin-bottom: 14px; line-height: 1.5; flex: 1; }
-    [data-theme="dark"] .phylab-exp-subtitle { color: #94a3b8; }
-    .phylab-exp-meta {
-      display: flex; justify-content: space-between; align-items: center;
-      padding-top: 12px; border-top: 1px solid #f1f5f9; margin-top: auto;
+    .phylab-book-head { padding-bottom: 18px; border-bottom: 1px solid #c9bfa5; }
+    .phylab-book-kicker {
+      margin: 0 0 9px;
+      color: #8a7759;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .24em;
     }
-    [data-theme="dark"] .phylab-exp-meta { border-color: #334155; }
-    .phylab-exp-cat-tag {
-      font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em;
-      padding: 3px 9px; border-radius: 20px; background: #eef2ff; color: #4f46e5;
+    .phylab-book-title {
+      margin: 0;
+      color: #27382e;
+      font-family: Georgia, "Songti TC", "Noto Serif TC", "Kaiti TC", serif;
+      font-size: clamp(32px, 6vw, 46px);
+      font-weight: 400;
+      line-height: 1.2;
+      letter-spacing: .10em;
     }
-    [data-theme="dark"] .phylab-exp-cat-tag { background: #312e81; color: #c7d2fe; }
-    .phylab-exp-start {
-      font-size: 11px; font-weight: 800; color: #4f46e5;
-      text-transform: uppercase; letter-spacing: .05em;
-      display: flex; align-items: center; gap: 4px;
+    .phylab-book-sub {
+      margin: 11px 0 0;
+      color: #687168;
+      font-size: 12px;
+      line-height: 1.7;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px 22px;
+      flex-wrap: wrap;
     }
-    [data-theme="dark"] .phylab-exp-start { color: #a5b4fc; }
-    .phylab-exp-start svg { width: 12px; height: 12px; }
+    .phylab-book-sub span:last-child { color: #8a7759; }
+    .phylab-book-toc {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: start;
+      gap: 20px 26px;
+      margin-top: 22px;
+    }
+    .phylab-toc-part {
+      min-width: 0;
+      padding: 14px 16px 13px;
+      border: 1px solid #bcb39b;
+      border-radius: 2px 8px 4px 7px;
+      background: rgba(255, 255, 255, .22);
+    }
+    .phylab-toc-part:nth-child(2n) {
+      border-color: #b39b76;
+      background: rgba(203, 178, 124, .08);
+    }
+    .phylab-toc-part-head {
+      display: flex;
+      align-items: baseline;
+      gap: 9px;
+      padding-bottom: 9px;
+      border-bottom: 1px solid #d1c8b3;
+    }
+    .phylab-toc-part-no {
+      color: #8a6f4d;
+      font-family: Georgia, "Songti TC", "Noto Serif TC", serif;
+      font-size: 12px;
+      letter-spacing: .08em;
+      white-space: nowrap;
+    }
+    .phylab-toc-part-head h3 {
+      flex: 1;
+      min-width: 0;
+      margin: 0;
+      color: #27382e;
+      font-family: Georgia, "Songti TC", "Noto Serif TC", "Kaiti TC", serif;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: .06em;
+      line-height: 1.35;
+    }
+    .phylab-toc-part-count {
+      color: #8a7759;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 10px;
+      letter-spacing: .04em;
+    }
+    .phylab-toc-row {
+      display: flex;
+      width: 100%;
+      min-width: 0;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 11px 4px;
+      border: 0;
+      border-top: 1px dashed #cfc6b2;
+      border-radius: 3px;
+      background: transparent;
+      color: inherit;
+      font-family: inherit;
+      text-align: left;
+      cursor: pointer;
+      transition: background .18s ease, padding-left .18s ease, opacity .18s ease;
+    }
+    .phylab-toc-row:first-of-type { border-top-color: transparent; }
+    .phylab-toc-row:hover,
+    .phylab-toc-row:focus-visible {
+      padding-left: 9px;
+      background: #e9e0ca;
+      outline: none;
+    }
+    .phylab-toc-row:focus-visible { outline: 2px solid #9b7b4c; outline-offset: 2px; }
+    .phylab-toc-row.is-selected { background: #e1d6bd; }
+    .phylab-toc-page {
+      flex: 0 0 25px;
+      padding-top: 2px;
+      color: #8d7a5c;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: .02em;
+    }
+    .phylab-toc-main {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .phylab-toc-title {
+      color: #2d3a31;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.45;
+      letter-spacing: -.01em;
+    }
+    .phylab-toc-desc {
+      color: #687168;
+      font-size: 12px;
+      line-height: 1.55;
+      overflow-wrap: anywhere;
+    }
+    .phylab-toc-arrow {
+      flex: 0 0 auto;
+      padding-top: 2px;
+      color: #9b896a;
+      font-size: 16px;
+      line-height: 1;
+      transition: transform .18s ease, color .18s ease;
+    }
+    .phylab-toc-row:hover .phylab-toc-arrow,
+    .phylab-toc-row:focus-visible .phylab-toc-arrow {
+      color: #27382e;
+      transform: translateX(3px);
+    }
+    .phylab-book-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 26px;
+      padding-top: 20px;
+      border-top: 1px solid #c9bfa5;
+    }
+    .phylab-bookmark {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 9px 24px 14px;
+      border: 0;
+      border-radius: 2px;
+      background: #7a3e2e;
+      color: #f8f1df;
+      box-shadow: 0 5px 12px rgba(90, 53, 37, .24);
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 84%, 0 100%);
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      cursor: pointer;
+      transition: background .18s ease, transform .18s ease;
+    }
+    .phylab-bookmark:hover { background: #603024; transform: translateY(-1px); }
+    .phylab-bookmark:focus-visible { outline: 2px solid #9b7b4c; outline-offset: 4px; }
+    .phylab-book-folio {
+      color: #8a7759;
+      font-size: 10px;
+      letter-spacing: .08em;
+    }
+    #phylabSelector.is-turning { pointer-events: none; }
+    #phylabSelector.is-turning .phylab-book {
+      animation: phylabPageTurn .47s cubic-bezier(.55, .06, .68, .19) forwards;
+    }
+    @keyframes phylabPageTurn {
+      0% { transform: perspective(1200px) rotateY(0) translateX(0); opacity: 1; filter: blur(0); }
+      55% { transform: perspective(1200px) rotateY(-5deg) translateX(-9px); opacity: .94; filter: blur(.2px); }
+      100% { transform: perspective(1200px) rotateY(-12deg) translateX(-34px); opacity: 0; filter: blur(1px); }
+    }
+    @media (max-width: 700px) {
+      .phylab-selector-content { padding: 18px 14px 44px; }
+      .phylab-book { padding: 25px 18px 22px 25px; }
+      .phylab-book-toc { grid-template-columns: minmax(0, 1fr); gap: 14px; margin-top: 18px; }
+      .phylab-book-sub { font-size: 11.5px; }
+      .phylab-toc-part { padding: 12px 13px 11px; }
+      .phylab-book-foot { margin-top: 20px; padding-top: 16px; }
+    }
+    @media (max-width: 420px) {
+      .phylab-selector-content { padding-left: 10px; padding-right: 10px; }
+      .phylab-book { padding: 21px 13px 19px 20px; }
+      .phylab-book-title { font-size: 31px; letter-spacing: .08em; }
+      .phylab-book-kicker { font-size: 9px; letter-spacing: .18em; }
+      .phylab-toc-row { gap: 8px; padding: 10px 2px; }
+      .phylab-toc-page { flex-basis: 22px; font-size: 11px; }
+      .phylab-toc-title { font-size: 13px; }
+      .phylab-toc-desc { font-size: 11.5px; }
+      .phylab-bookmark { min-height: 40px; padding: 8px 20px 13px; font-size: 11px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #phylabSelector.is-turning .phylab-book { animation-duration: .01ms; }
+      .phylab-toc-row, .phylab-toc-arrow, .phylab-bookmark { transition: none; }
+    }
 
     #phylabLab { background: #0b1220; flex-direction: column; overflow: hidden; }
     .phylab-lab-shell { display: flex; flex-direction: column; height: 100%; width: 100%; }
@@ -253,3 +446,8 @@
       box-shadow: 0 6px 20px rgba(79,70,229,.35);
     }
     .phylab-result-back:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(79,70,229,.5); }
+
+    .phylab-privacy-link { color: #c7d2fe; font-weight: 600; text-decoration: underline; text-underline-offset: 2px; pointer-events: auto; white-space: nowrap; }
+    .phylab-privacy-link:hover { color: #fff; }
+
+    .phylab-toolbar.is-selector-hidden { display: none !important; }

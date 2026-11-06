@@ -1,4 +1,115 @@
-import * as THREE from 'three';
+import {
+  ACESFilmicToneMapping,
+  AdditiveBlending,
+  ArrowHelper,
+  BackSide,
+  BoxGeometry,
+  BufferAttribute,
+  BufferGeometry,
+  CanvasTexture,
+  CatmullRomCurve3,
+  CircleGeometry,
+  Color,
+  ConeGeometry,
+  CurvePath,
+  CylinderGeometry,
+  DirectionalLight,
+  DoubleSide,
+  ExtrudeGeometry,
+  FrontSide,
+  GridHelper,
+  Group,
+  HemisphereLight,
+  LatheGeometry,
+  Line,
+  LineBasicMaterial,
+  LineCurve3,
+  LineDashedMaterial,
+  MathUtils,
+  Mesh,
+  MeshBasicMaterial,
+  MeshLambertMaterial,
+  MeshPhysicalMaterial,
+  MeshStandardMaterial,
+  NormalBlending,
+  PCFSoftShadowMap,
+  PerspectiveCamera,
+  PlaneGeometry,
+  PMREMGenerator,
+  PointLight,
+  Points,
+  PointsMaterial,
+  QuadraticBezierCurve3,
+  Raycaster,
+  RingGeometry,
+  Scene,
+  Shape,
+  SphereGeometry,
+  SRGBColorSpace,
+  TorusGeometry,
+  TubeGeometry,
+  Vector2,
+  Vector3,
+  WebGLRenderer,
+} from 'three';
+
+/* Local compatibility namespace. Experiments import `THREE` from this
+   module, while the named imports above let Vite tree-shake the rest of
+   the Three.js namespace. Do not replace with `import * as THREE`. */
+const THREE = {
+  ACESFilmicToneMapping,
+  AdditiveBlending,
+  ArrowHelper,
+  BackSide,
+  BoxGeometry,
+  BufferAttribute,
+  BufferGeometry,
+  CanvasTexture,
+  CatmullRomCurve3,
+  CircleGeometry,
+  Color,
+  ConeGeometry,
+  CurvePath,
+  CylinderGeometry,
+  DirectionalLight,
+  DoubleSide,
+  ExtrudeGeometry,
+  FrontSide,
+  GridHelper,
+  Group,
+  HemisphereLight,
+  LatheGeometry,
+  Line,
+  LineBasicMaterial,
+  LineCurve3,
+  LineDashedMaterial,
+  MathUtils,
+  Mesh,
+  MeshBasicMaterial,
+  MeshLambertMaterial,
+  MeshPhysicalMaterial,
+  MeshStandardMaterial,
+  NormalBlending,
+  PCFSoftShadowMap,
+  PerspectiveCamera,
+  PlaneGeometry,
+  PMREMGenerator,
+  PointLight,
+  Points,
+  PointsMaterial,
+  QuadraticBezierCurve3,
+  Raycaster,
+  RingGeometry,
+  Scene,
+  Shape,
+  SphereGeometry,
+  SRGBColorSpace,
+  TorusGeometry,
+  TubeGeometry,
+  Vector2,
+  Vector3,
+  WebGLRenderer,
+};
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
@@ -1426,7 +1537,21 @@ import { marksKey } from '../core/storage.js';
       const sb = activeContainer.querySelector('#sidebar');
       if (!sb) return;
       const html = typeof currentExp.sidebar === 'function' ? currentExp.sidebar.call(currentExp) : '';
-      sb.innerHTML = html;
+      const expIndex = EXPS.findIndex(e => e.id === currentExp.id);
+      const chapterNo = String((expIndex >= 0 ? expIndex : 0) + 1).padStart(2, '0');
+      const chapterTotal = String(EXPS.length || 15).padStart(2, '0');
+      const chapterLabel = lang === 'en'
+        ? 'CHAPTER ' + chapterNo + ' / ' + chapterTotal
+        : '第 ' + chapterNo + ' 章 · 共 ' + chapterTotal + ' 章';
+      const pageHead = ''
+        + '<div class="sidebar-pagehead">'
+        +   '<div class="sidebar-pagehead-kicker">'
+        +     '<span>' + (lang === 'en' ? 'LAB NOTES' : '實驗手記') + '</span>'
+        +     '<span>' + chapterLabel + '</span>'
+        +   '</div>'
+        +   '<h2>' + T(currentExp.title) + '</h2>'
+        + '</div>';
+      sb.innerHTML = pageHead + html;
       if (typeof currentExp.bindSidebar === 'function') currentExp.bindSidebar.call(currentExp, sb);
     }
 
