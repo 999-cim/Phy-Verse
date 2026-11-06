@@ -31,6 +31,8 @@ import {
   MeshLambertMaterial,
   MeshPhysicalMaterial,
   MeshStandardMaterial,
+  MeshToonMaterial,
+  NearestFilter,
   NormalBlending,
   PCFSoftShadowMap,
   PerspectiveCamera,
@@ -89,6 +91,8 @@ const THREE = {
   MeshLambertMaterial,
   MeshPhysicalMaterial,
   MeshStandardMaterial,
+  MeshToonMaterial,
+  NearestFilter,
   NormalBlending,
   PCFSoftShadowMap,
   PerspectiveCamera,
@@ -310,52 +314,49 @@ import { marksKey } from '../core/storage.js';
     }
 
     /* ============================================================
-       PBR 材質庫（ACES + PMREM 環境下）
+       TOON 材質庫（卡通／動畫風格的階梯光影）
        ============================================================ */
+    let toonGradientMap = null;
+    function getToonGradientMap() {
+      if (toonGradientMap) return toonGradientMap;
+      const canvas = document.createElement('canvas');
+      canvas.width = 4;
+      canvas.height = 1;
+      const ctx = canvas.getContext('2d');
+      ['#565b63', '#9299a2', '#cbd0d6', '#ffffff'].forEach((color, i) => {
+        ctx.fillStyle = color;
+        ctx.fillRect(i, 0, 1, 1);
+      });
+      const tex = new THREE.CanvasTexture(canvas);
+      tex.minFilter = THREE.NearestFilter;
+      tex.magFilter = THREE.NearestFilter;
+      tex.generateMipmaps = false;
+      tex.needsUpdate = true;
+      toonGradientMap = tex;
+      return tex;
+    }
+
+    function toonMat(color) {
+      return new THREE.MeshToonMaterial({
+        color,
+        gradientMap: getToonGradientMap(),
+      });
+    }
+
     const MAT = {
-      metal: () => new THREE.MeshPhysicalMaterial({
-        color: 0xc9d3de, metalness: 0.94, roughness: 0.22,
-        clearcoat: 0.25, clearcoatRoughness: 0.28, envMapIntensity: 1.15
-      }),
-      steel: () => new THREE.MeshPhysicalMaterial({
-        color: 0xb8c2cd, metalness: 0.96, roughness: 0.18,
-        envMapIntensity: 1.2
-      }),
-      aluminium: () => new THREE.MeshPhysicalMaterial({
-        color: 0xd5dbe2, metalness: 0.9, roughness: 0.28, envMapIntensity: 1.1
-      }),
-      brass: () => new THREE.MeshPhysicalMaterial({
-        color: 0xc9a24a, metalness: 0.95, roughness: 0.2,
-        clearcoat: 0.2, envMapIntensity: 1.25
-      }),
-      copper: () => new THREE.MeshPhysicalMaterial({
-        color: 0xb4693c, metalness: 0.93, roughness: 0.24, envMapIntensity: 1.2
-      }),
-      dark: () => new THREE.MeshPhysicalMaterial({
-        color: 0x39424e, metalness: 0.72, roughness: 0.4, envMapIntensity: 0.9
-      }),
-      ring: () => new THREE.MeshPhysicalMaterial({
-        color: 0x8a99aa, metalness: 0.92, roughness: 0.24, envMapIntensity: 1.1
-      }),
-      rubber: () => new THREE.MeshStandardMaterial({
-        color: 0x141a20, metalness: 0.0, roughness: 0.88
-      }),
-      ceramic: () => new THREE.MeshPhysicalMaterial({
-        color: 0xe3d2b4, metalness: 0.0, roughness: 0.5, clearcoat: 0.4, envMapIntensity: 0.7
-      }),
-      cream: () => new THREE.MeshPhysicalMaterial({
-        color: 0xe6e4dc, metalness: 0.05, roughness: 0.42,
-        clearcoat: 0.45, clearcoatRoughness: 0.35, envMapIntensity: 0.9
-      }),
-      white: () => new THREE.MeshPhysicalMaterial({
-        color: 0xf4f6f8, metalness: 0.0, roughness: 0.5, envMapIntensity: 0.7
-      }),
-      black: () => new THREE.MeshPhysicalMaterial({
-        color: 0x11161c, metalness: 0.25, roughness: 0.5, envMapIntensity: 0.8
-      }),
-      red: () => new THREE.MeshPhysicalMaterial({
-        color: 0xb83228, metalness: 0.15, roughness: 0.34, clearcoat: 0.5
-      }),
+      metal: () => toonMat(0x8ecae6),
+      steel: () => toonMat(0xa9d0e8),
+      aluminium: () => toonMat(0x9ed8e8),
+      brass: () => toonMat(0xffd166),
+      copper: () => toonMat(0xf4a261),
+      dark: () => toonMat(0x566273),
+      ring: () => toonMat(0xc9b6e8),
+      rubber: () => toonMat(0x444b55),
+      ceramic: () => toonMat(0xf6d9b8),
+      cream: () => toonMat(0xfff0d6),
+      white: () => toonMat(0xfffdf7),
+      black: () => toonMat(0x374151),
+      red: () => toonMat(0xef7b72),
       glass: () => new THREE.MeshPhysicalMaterial({
         color: 0xdbeafe, transparent: true, opacity: 0.32,
         roughness: 0.05, metalness: 0.0, transmission: 0.65,
@@ -374,10 +375,7 @@ import { marksKey } from '../core/storage.js';
         ior: 1.33, thickness: 0.3, side: THREE.DoubleSide,
         depthWrite: false, envMapIntensity: 1.1
       }),
-      pcb: () => new THREE.MeshPhysicalMaterial({
-        color: 0x0d3a31, metalness: 0.15, roughness: 0.48,
-        clearcoat: 0.6, clearcoatRoughness: 0.25, envMapIntensity: 0.8
-      }),
+      pcb: () => toonMat(0x74c9a9),
       emissive: (color) => new THREE.MeshBasicMaterial({ color })
     };
 
@@ -449,10 +447,7 @@ import { marksKey } from '../core/storage.js';
       });
       geo.center();
       geo.rotateX(-Math.PI / 2);
-      const mat = new THREE.MeshPhysicalMaterial({
-        color, metalness: 0.92, roughness: 0.24,
-        clearcoat: 0.3, clearcoatRoughness: 0.25, envMapIntensity: 1.15
-      });
+      const mat = toonMat(color);
       const m = new THREE.Mesh(geo, mat);
       m.castShadow = true; m.receiveShadow = true;
       return m;
@@ -708,9 +703,7 @@ import { marksKey } from '../core/storage.js';
         { x: L * 0.20, c: 0xc9a24a, w: L * 0.05 }
       ];
       for (const b of bands) {
-        const band = new THREE.Mesh(new THREE.CylinderGeometry(R * 1.25, R * 1.25, b.w, 36), new THREE.MeshPhysicalMaterial({
-          color: b.c, metalness: 0.25, roughness: 0.45, clearcoat: 0.4
-        }));
+        const band = new THREE.Mesh(new THREE.CylinderGeometry(R * 1.25, R * 1.25, b.w, 36), toonMat(b.c));
         band.rotation.z = Math.PI / 2;
         band.position.x = b.x;
         group.add(band);
@@ -733,7 +726,7 @@ import { marksKey } from '../core/storage.js';
       board.position.y = 0.08;
       group.add(board);
       /* 銅箔走線 */
-      const traceMat = new THREE.MeshPhysicalMaterial({ color: 0xb8732d, metalness: 0.9, roughness: 0.25 });
+      const traceMat = toonMat(0xe0a060);
       const tracePts = [
         new THREE.Vector3(-w * 0.42, 0.17, -d * 0.32), new THREE.Vector3(-w * 0.15, 0.17, -d * 0.32),
         new THREE.Vector3(-w * 0.15, 0.17, d * 0.20), new THREE.Vector3(w * 0.30, 0.17, d * 0.20)
@@ -944,13 +937,8 @@ import { marksKey } from '../core/storage.js';
       const root = new THREE.Group();
       root.position.set(posX, 0, posZ);
 
-      const baseMat = new THREE.MeshPhysicalMaterial({
-        color: 0x1b232c, metalness: 0.76, roughness: 0.34,
-        clearcoat: 0.25, clearcoatRoughness: 0.4, envMapIntensity: 0.95
-      });
-      const chromeMat = new THREE.MeshPhysicalMaterial({
-        color: 0xd7dde5, metalness: 0.95, roughness: 0.16, envMapIntensity: 1.3
-      });
+      const baseMat = toonMat(0x4f5b6b);
+      const chromeMat = toonMat(0xcfeaff);
 
       /* 1. 加重底座：橡膠防滑環 + 階梯鑄鐵盤 + 頂部套環 */
       const rubberRing = new THREE.Mesh(new THREE.CylinderGeometry(0.50, 0.56, 0.035, 48), MAT.rubber());
