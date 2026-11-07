@@ -1,5 +1,5 @@
 import {
-  THREE, T, t, lang, root3d, camera, viewMode, marks, trail,
+  THREE, T, t, lang, root3d, camera, viewMode, marks, trail, scene, renderer,
   MAT, rbox, lathe, barBetween, makeCanvas, slottedMassMesh, createMassStack,
   addGraduation, createGraduatedCylinder, createPiston, createPSU, createMeter,
   createResistor, createPCB, createRetortStand, helixPoints, createHelicalSpring,
@@ -9,35 +9,36 @@ import {
   sliderHTML, bindSliders, chkHTML, bindChks, renderSidebar, renderHUD, updatePtCount,
   refreshPlayBtn, populateGraphSelect, drawGraph, setCamera3D, setViewMode,
 } from '../engine.js';
+import { loadHandbookGLB, mountHandbookRoot } from '../toonify.js';
 
 export default {
   id:'latent',
   cat:'heat',
-  title:{ en:'Latent Heat of Fusion of Ice · L_f', tc:'冰的熔化潛熱 · L_f', sc:'冰的熔化潜热 · L_f' },
+  title:{ en:'Latent Heat of Fusion of Ice · L_f', tc:'冰的熔化潛熱 · L_f', sc:'冰的熔化潜熱 · L_f' },
   desc:{ en:'Heat ice with a known electrical power. When it reaches 0 °C, T stays constant until all ice melts. Plateau length gives L_f.',
          tc:'用已知電功率加熱冰。到 0 °C 後 T 保持不變，直到冰全部融化。平台長度可求出 L_f。',
-         sc:'用已知电功率加热冰。到 0 °C 后 T 保持不变，直到冰全部融化。平台长度可求出 L_f。' },
+         sc:'用已知電功率加熱冰。到 0 °C 後 T 保持不變，直到冰全部融化。平台長度可求出 L_f。' },
   hasPSU:true,
   cam3d:[6,5,8], camFront:{ pos:[0,2,10], tgt:[0,2,0] },
   vectorLegend:[
-    [{en:'Heat in from heater', tc:'加熱器輸入', sc:'加热器输入'}, '#ff5f56'],
-    [{en:'Latent heat absorbed', tc:'潛熱吸收', sc:'潜热吸收'}, '#a78bfa']
+    [{en:'Heat in from heater', tc:'加熱器輸入', sc:'加熱器输入'}, '#ff5f56'],
+    [{en:'Latent heat absorbed', tc:'潛熱吸收', sc:'潜熱吸收'}, '#a78bfa']
   ],
   equipment:[
-    {id:'bk', name:{en:'Beaker with ice', tc:'裝冰的燒杯', sc:'装冰的烧杯'}},
-    {id:'heater', name:{en:'Immersion heater', tc:'加熱器', sc:'加热器'}},
-    {id:'psu', name:{en:'Power supply', tc:'電源', sc:'电源'}},
-    {id:'thermo', name:{en:'Thermometer', tc:'溫度計', sc:'温度计'}},
+    {id:'bk', name:{en:'Beaker with ice', tc:'裝冰的燒杯', sc:'裝冰的烧杯'}},
+    {id:'heater', name:{en:'Immersion heater', tc:'加熱器', sc:'加熱器'}},
+    {id:'psu', name:{en:'Power supply', tc:'電源', sc:'電源'}},
+    {id:'thermo', name:{en:'Thermometer', tc:'溫度計', sc:'溫度計'}},
     {id:'stir', name:{en:'Stirrer', tc:'攪拌器', sc:'搅拌器'}},
     {id:'bal', name:{en:'Balance', tc:'天平', sc:'天平'}}
   ],
   variables:[
-    {id:'ice', name:{en:'Ice mass', tc:'冰的質量', sc:'冰的质量'}, min:0.05, max:0.30, step:0.01, def:0.10, unit:' kg'}
+    {id:'ice', name:{en:'Ice mass', tc:'冰的質量', sc:'冰的質量'}, min:0.05, max:0.30, step:0.01, def:0.10, unit:' kg'}
   ],
   graph:{
     activeType:0,
     types:[
-      { id:'Tt', label:{en:'T vs t', tc:'T 對 t', sc:'T 对 t'},
+      { id:'Tt', label:{en:'T vs t', tc:'T 對 t', sc:'T 對 t'},
         xLabel:'Time (s)', yLabel:'T (°C)', xMax:300, xFmt:0, yFmt:0, slopeUnit:'°C/s',
         current(){ return { x:this.t, y:this.vars.T - 273 }; } }
     ],
@@ -52,6 +53,13 @@ export default {
 
   init() {
     const g = root3d;
+    loadHandbookGLB('/models/latent_apparatus.glb', {
+      outline: { targets: [{ name:'Beaker', shader:true }, { name:'Heater' }]  },
+      onLoad: (root) => {
+        mountHandbookRoot(g, root, scene, renderer, { keep: [this._water, ...(this._iceCubes || []), this._thermo && this._thermo.group, this._psuGroup] }); this._beaker = root.getObjectByName('Beaker'); this.sync3D(0);
+      }
+    });
+
     addGround();
 
     /* 厚底刻度燒杯（帶傾倒嘴） */
@@ -107,6 +115,7 @@ for (let i = 0; i < MAX_CUBES; i++) {
     const psu = createPSU({ w: 1.2, h: 1.0, d: 0.9, screenW: 0.95, screenH: 0.5 });
     psu.group.position.set(2.4, 0, -0.6);
     g.add(psu.group);
+    this._psuGroup = psu.group;
     this._psuCtx = psu.ctx; this._psuTex = psu.tex; this._psuScreen = psu.screen;
     g.add(createWire([[2.0, 0.45, -0.3], [1.2, 0.2, 0.4], [0.5, 0.15, 0.35]], 0xcc3333, 0.032));
     g.add(createWire([[2.8, 0.45, -0.3], [1.4, 0.2, -0.4], [-0.5, 0.15, 0.35]], 0x22282f, 0.032));
@@ -220,7 +229,7 @@ for (let i = 0; i < MAX_CUBES; i++) {
     h += '<div class="card"><div class="card-head"><h3>' + t('hint') + '</h3></div><div class="hint-text">' +
       T({ en:'Set <b>voltage</b> &gt; 0 to heat the ice. The flat 0 °C line lasts while ice is melting — energy goes into L_f, not T.',
           tc:'將<b>電壓</b>設 &gt; 0 加熱冰。0 °C 平台持續到冰全部融化 — 能量用於 L_f，而非升溫。',
-          sc:'将<b>电压</b>设 &gt; 0 加热冰。0 °C 平台持续到冰全部融化 — 能量用于 L_f，而非升温。' }) +
+          sc:'将<b>電壓</b>設 &gt; 0 加熱冰。0 °C 平台持續到冰全部融化 — 能量用于 L_f，而非升溫。' }) +
       '</div></div>';
     return h;
   },

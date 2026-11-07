@@ -1,5 +1,5 @@
 import {
-  THREE, T, t, lang, root3d, camera, viewMode, marks, trail,
+  THREE, T, t, lang, root3d, camera, viewMode, marks, trail, scene, renderer,
   MAT, rbox, lathe, barBetween, makeCanvas, slottedMassMesh, createMassStack,
   addGraduation, createGraduatedCylinder, createPiston, createPSU, createMeter,
   createResistor, createPCB, createRetortStand, helixPoints, createHelicalSpring,
@@ -9,22 +9,23 @@ import {
   sliderHTML, bindSliders, chkHTML, bindChks, renderSidebar, renderHUD, updatePtCount,
   refreshPlayBtn, populateGraphSelect, drawGraph, setCamera3D, setViewMode,
 } from '../engine.js';
+import { loadHandbookGLB, mountHandbookRoot } from '../toonify.js';
 
 export default {
   id:'greenhouse',
   cat:'heat',
-  title:{ en:'Greenhouse Effect', tc:'溫室效應', sc:'温室效应' },
+  title:{ en:'Greenhouse Effect', tc:'溫室效應', sc:'溫室效應' },
   desc:{ en:'Compare temperature rise inside and outside a glass box under a heat lamp.',
          tc:'比較加熱燈下玻璃箱內外的升溫。',
-         sc:'比较加热灯下玻璃箱内外的升温。' },
+         sc:'比较加熱燈下玻璃箱内外的升溫。' },
   hasPSU:false,
   cam3d:[4,3,8], camFront:{ pos:[0,3,10], tgt:[0,3,0] },
   vectorLegend:[
     [{en:'Incoming', tc:'入射', sc:'入射'}, '#ffb020'],
-    [{en:'Trapped IR', tc:'困住的紅外線', sc:'困住的红外线'}, '#ff5f56']
+    [{en:'Trapped IR', tc:'困住的紅外線', sc:'困住的红外線'}, '#ff5f56']
   ],
   equipment:[
-    {id:'lamp', name:{en:'Heat lamp', tc:'熱燈', sc:'热灯'}},
+    {id:'lamp', name:{en:'Heat lamp', tc:'熱燈', sc:'熱燈'}},
     {id:'box', name:{en:'Glass box', tc:'玻璃箱', sc:'玻璃箱'}},
     {id:'th1', name:{en:'T inside', tc:'箱內 T', sc:'箱内 T'}},
     {id:'th2', name:{en:'T outside', tc:'箱外 T', sc:'箱外 T'}},
@@ -37,7 +38,7 @@ export default {
   graph:{
     activeType:0,
     types:[
-      { id:'T', label:{en:'T vs time', tc:'T 對時間', sc:'T 对时间'},
+      { id:'T', label:{en:'T vs time', tc:'T 對時間', sc:'T 對時間'},
         xLabel:'Time (s)', yLabel:'T (°C)', xMax:200, xFmt:0, yFmt:1, slopeUnit:'°C/s',
         current(){ return { x:this.t, y:this.Tin - 273 }; } }
     ],
@@ -51,6 +52,17 @@ export default {
 
     init() {
     const g = root3d;
+    loadHandbookGLB('/models/greenhouse_apparatus.glb', {
+      outline: { targets: [{ name:'Glass_Wall_X_L', shader:true }, { name:'Glass_Wall_X_R', shader:true }, { name:'Glass_Wall_Y_F', shader:true }, { name:'Glass_Wall_Y_B', shader:true }, { name:'Glass_Roof_L', shader:true }, { name:'Glass_Roof_R', shader:true }]  },
+      onLoad: (root) => {
+        root.position.set(-1.5, 0, 0);
+        const roofMat = new THREE.MeshToonMaterial({ color: 0xcbe7e3, transparent: true, opacity: 0.32, side: THREE.DoubleSide, depthWrite: false });
+        const roof = new THREE.Mesh(new THREE.ConeGeometry(2.0, 0.95, 4), roofMat);
+        roof.rotation.y = Math.PI / 4; roof.position.set(0, 2.05, 0); root.add(roof);
+        mountHandbookRoot(g, root, scene, renderer); this.sync3D(0);
+      }
+    });
+
     addGround();
 
     /* 燈頭自動俯衝對準溫室中心，而不是水平射向空中 */
@@ -123,7 +135,7 @@ export default {
     h += '<div class="card"><div class="card-head"><h3>' + t('hint') + '</h3></div><div class="hint-text">' +
       T({ en:'More CO₂ → more trapped IR → hotter inside. This is the greenhouse effect.',
           tc:'更多 CO₂ → 更多困住的紅外線 → 內部更熱。這就是溫室效應。',
-          sc:'更多 CO₂ → 更多困住的红外线 → 内部更热。这就是温室效应。' }) + '</div></div>';
+          sc:'更多 CO₂ → 更多困住的红外線 → 内部更熱。這就是溫室效應。' }) + '</div></div>';
     return h;
   },
   bindSidebar(el) {

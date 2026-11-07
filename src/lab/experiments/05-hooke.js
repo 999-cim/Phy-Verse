@@ -9,7 +9,7 @@ import {
   sliderHTML, bindSliders, chkHTML, bindChks, renderSidebar, renderHUD, updatePtCount,
   refreshPlayBtn, populateGraphSelect, drawGraph, setCamera3D, setViewMode,
 } from '../engine.js';
-import { loadHandbookGLB, applyPaperScene } from '../toonify.js';
+import { createHookeApparatus } from './blueprint-apparatus.js';
 
 export default {
   id:'hooke',
@@ -17,32 +17,32 @@ export default {
   title:{ en:"Hooke's Law · F = kx", tc:'虎克定律 · F = kx', sc:'胡克定律 · F = kx' },
   desc:{ en:'Add or remove weights from the spring. Measure the extension — F is proportional to x.',
          tc:'從彈簧增加或移除砝碼。量度伸長量 — F 與 x 成正比。',
-         sc:'从弹簧增加或移除砝码。量度伸长量 — F 与 x 成正比。' },
+         sc:'从彈簧增加或移除砝码。量度伸長量 — F 與 x 成正比。' },
   hasPSU:false,
   cam3d:[5,5,9], camFront:{ pos:[0,4,12], tgt:[0,4,0] },
   vectorLegend:[
-    [{en:'Spring restoring force (up)', tc:'彈簧回復力 (上)', sc:'弹簧恢复力 (上)'}, '#ff5f56'],
+    [{en:'Spring restoring force (up)', tc:'彈簧回復力 (上)', sc:'彈簧恢复力 (上)'}, '#ff5f56'],
     [{en:'Weight (down)', tc:'重力 (下)', sc:'重力 (下)'}, '#4da3ff']
   ],
   equipment:[
-    {id:'clamp', name:{en:'Stand & clamp', tc:'支架與夾具', sc:'支架与夹具'}},
-    {id:'spring', name:{en:'Helical spring', tc:'螺旋彈簧', sc:'螺旋弹簧'}},
+    {id:'clamp', name:{en:'Stand & clamp', tc:'支架與夾具', sc:'支架與夹具'}},
+    {id:'spring', name:{en:'Helical spring', tc:'螺旋彈簧', sc:'螺旋彈簧'}},
     {id:'hanger', name:{en:'Weight hanger', tc:'砝碼掛鉤', sc:'砝码挂钩'}},
     {id:'masses', name:{en:'Mass set (drag)', tc:'砝碼（拖曳）', sc:'砝码（拖拽）'}},
     {id:'ruler', name:{en:'Metre ruler', tc:'米尺', sc:'米尺'}},
-    {id:'pointer', name:{en:'Marker', tc:'標記', sc:'标记'}}
+    {id:'pointer', name:{en:'Marker', tc:'標記', sc:'標記'}}
   ],
   variables:[
-    {id:'k', name:{en:'Spring constant k', tc:'彈簧常數 k', sc:'弹簧常数 k'}, min:10, max:80, step:1, def:30, unit:' N/m'},
-    {id:'m', name:{en:'Hanging mass m', tc:'懸掛質量 m', sc:'悬挂质量 m'}, min:0, max:1.0, step:0.02, def:0.20, unit:' kg'}
+    {id:'k', name:{en:'Spring constant k', tc:'彈簧常數 k', sc:'彈簧常數 k'}, min:10, max:80, step:1, def:30, unit:' N/m'},
+    {id:'m', name:{en:'Hanging mass m', tc:'懸掛質量 m', sc:'懸挂質量 m'}, min:0, max:1.0, step:0.02, def:0.20, unit:' kg'}
   ],
   graph:{
     activeType:0,
     types:[
-      { id:'xm', label:{en:'x vs m', tc:'x 對 m', sc:'x 对 m'},
+      { id:'xm', label:{en:'x vs m', tc:'x 對 m', sc:'x 對 m'},
         xLabel:'m (kg)', yLabel:'x (cm)', xMax:1.1, xFmt:2, yFmt:1, slopeUnit:'cm/kg',
         current(){ return { x:this.vars.m, y:this.x * 100 }; } },
-      { id:'xf', label:{en:'x vs F', tc:'x 對 F', sc:'x 对 F'},
+      { id:'xf', label:{en:'x vs F', tc:'x 對 F', sc:'x 對 F'},
         xLabel:'F (N)', yLabel:'x (cm)', xMax:12, xFmt:1, yFmt:1, slopeUnit:'cm/N',
         current(){ return { x:this.vars.m * 9.81, y:this.x * 100 }; } }
     ],
@@ -58,77 +58,13 @@ export default {
   _arrowSpring:null, _arrowWeight:null,
 
   init() {
-    const g = root3d;
-    addGround();
-
-    /* GLB: stand + spring + hanger + the three Boyle weights */
-    loadHandbookGLB('/models/hooke_apparatus.glb', {
-      outline: { targets: [
-        { name:'Spring', factor:1.035 },
-        { name:'Stand_Base', factor:1.02 },
-        { name:'Stand_Rod', factor:1.02 },
-        { name:'Stand_Arm', factor:1.02 },
-        { name:'Weight_1kg_Body', factor:1.018 },
-        { name:'Weight_500g_Body', factor:1.018 },
-        { name:'Weight_200g_Body', factor:1.018 },
-        { name:'GEO_weight_A_hook', factor:1.038 },
-        { name:'GEO_weight_B_hook', factor:1.038 },
-        { name:'GEO_weight_C_hook', factor:1.038 },
-      ] },
-      onLoad: (root) => {
-        this._assetRoot = root;
-        this._spring = root.getObjectByName('Spring');
-        this._hanger = root.getObjectByName('Hanger');
-        this._weightDiscs = ['Weight_1kg','Weight_500g','Weight_200g']
-          .map(n => root.getObjectByName(n)).filter(Boolean);
-        g.add(root);
-        applyPaperScene(scene, g, renderer);
-        this.sync3D(0);
-      }
-    });
-
-    /* 米尺：帆布刻度貼圖，不是一堆小方塊 */
-    const rulerTex = makeCanvas(128, 1024, (c, w, h) => {
-      c.fillStyle = '#f4e4bc'; c.fillRect(0, 0, w, h);
-      c.fillStyle = '#d8c39a'; c.fillRect(0, 0, 14, h);
-      c.strokeStyle = '#3b3326'; c.fillStyle = '#3b3326';
-      for (let i = 0; i <= 100; i++) {
-        const y = 14 + i * (h - 28) / 100;
-        const major = i % 10 === 0, mid = i % 5 === 0;
-        c.fillRect(60, y, major ? 58 : (mid ? 40 : 24), major ? 3 : 2);
-        if (major) { c.font = 'bold 17px Inter, system-ui, sans-serif'; c.fillText(String(100 - i), 10, y + 6); }
-      }
-    });
-    const ruler = rbox(0.42, 6.5, 0.08, 0.02, MAT.white(), 2);
-    ruler.position.set(1.4, 3.0, 0.1);
-    g.add(ruler);
-    const rulerFace = new THREE.Mesh(new THREE.PlaneGeometry(0.40, 6.46), new THREE.MeshBasicMaterial({ map: rulerTex.tex }));
-    rulerFace.position.set(1.4, 3.0, 0.146);
-    g.add(rulerFace);
-
-    /* 紅色標記 */
-    const marker = new THREE.Mesh(new THREE.BoxGeometry(0.62, 0.025, 0.035), new THREE.MeshBasicMaterial({ color: 0xff5f56 }));
-    marker.position.set(1.4, 0, 0.18);
-    g.add(marker);
-    this._marker = marker;
-
-    /* arrows */
-    this._arrowSpring = new THREE.ArrowHelper(new THREE.Vector3(0,1,0), new THREE.Vector3(), 2, 0xff5f56, 0.4, 0.18);
-    this._arrowWeight = new THREE.ArrowHelper(new THREE.Vector3(0,-1,0), new THREE.Vector3(), 2, 0x4da3ff, 0.4, 0.18);
-    this._arrowSpring.visible = this._arrowWeight.visible = false;
-    g.add(this._arrowSpring, this._arrowWeight);
-
-    this.reset();
+    this._app = createHookeApparatus();
+    root3d.add(this._app.group);
+    this._app.update(0);
+    setCamera3D([3.2, 2.3, 3.8], [0, 1.1, 0]);
   },
 
-  _makeSpring() {
-    return createHelicalSpring(0.28, 12, 0.030, 5.50, 4.0);
-  },
-
-  reset() {
-    this.x = 0;
-    this.vel = 0;
-  },
+  afterInitCamera() { setCamera3D([3.2, 2.3, 3.8], [0, 1.1, 0]); },
 
   update(dt) {
     /* equilibrium extension = mg / k */
@@ -146,35 +82,10 @@ export default {
   },
 
   sync3D(dt) {
-    /* spring y position: bottomY = 4.0 - x/0.05 */
-    const dY = this.x / 0.05;
-    const bottomY = Math.max(0.35, 4.0 - dY);
-    if (this._spring) {
-      this._spring.position.y = 5.5;
-      this._spring.scale.y = Math.max(0.2, (5.5 - bottomY) / 1.5);
-    }
-    if (this._hanger) this._hanger.position.y = bottomY;
-    const nVis = Math.max(1, Math.min(3, Math.ceil(this.vars.m / 0.07)));
-    this._weightDiscs.forEach((d, i) => d.visible = i < nVis);
-    if (this._marker) this._marker.position.y = bottomY + 0.15;
-
-    /* arrows */
-    const show = viewMode === 'vector';
-    this._arrowSpring.visible = this._arrowWeight.visible = show;
-    if (show) {
-      const Fs = this.vars.k * this.x;              /* spring force up */
-      const Fw = this.vars.m * 9.81;                /* weight down */
-      const k = 0.08;
-      const lenS = Math.max(0.4, Math.min(2.4, Fs * k));
-      const lenW = Math.max(0.4, Math.min(2.4, Fw * k));
-      this._arrowSpring.position.set(0.5, bottomY + 0.3, 0);
-      this._arrowSpring.setDirection(new THREE.Vector3(0, 1, 0));
-      this._arrowSpring.setLength(lenS, 0.3, 0.15);
-      this._arrowWeight.position.set(-0.5, bottomY - 0.3, 0);
-      this._arrowWeight.setDirection(new THREE.Vector3(0, -1, 0));
-      this._arrowWeight.setLength(lenW, 0.3, 0.15);
-    }
+    if (this._app) this._app.update(this.vars.m);
   },
+
+  _weightDiscs: [],
 
   draggables(){ return this._weightDiscs; },
   dragScale: 0.005,
@@ -201,7 +112,7 @@ export default {
     h += '<div class="card"><div class="card-head"><h3>' + t('hint') + '</h3></div><div class="hint-text">' +
       T({ en:'<b>Drag weights</b> onto the hanger (drag up/down) to change m. Record x at different m, then check x vs F — slope = 1/k.',
           tc:'<b>拖曳砝碼</b>改變 m。記錄不同 m 下的 x，切到 x 對 F — 斜率 = 1/k。',
-          sc:'<b>拖拽砝码</b>改变 m。记录不同 m 下的 x，切到 x 对 F — 斜率 = 1/k。' }) +
+          sc:'<b>拖拽砝码</b>改變 m。記錄不同 m 下的 x，切到 x 對 F — 斜率 = 1/k。' }) +
       '</div></div>';
     return h;
   },

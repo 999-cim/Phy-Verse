@@ -3,7 +3,6 @@ import {
   AdditiveBlending,
   ArrowHelper,
   BackSide,
-  Box3,
   BoxGeometry,
   BufferAttribute,
   BufferGeometry,
@@ -64,7 +63,6 @@ const THREE = {
   AdditiveBlending,
   ArrowHelper,
   BackSide,
-  Box3,
   BoxGeometry,
   BufferAttribute,
   BufferGeometry,
@@ -118,6 +116,7 @@ const THREE = {
 };
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { applyPaperScene } from './toonify.js';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import '../core/bridge.js';
 import { marksKey } from '../core/storage.js';
@@ -149,13 +148,13 @@ import { MANUALS } from '../data/manuals.js';
         slope:'斜率'
       },
       sc: {
-        back:'返回', pause:'暂停', play:'播放', rec:'记录', clear:'清除',
-        points:'数据点', loadFail:'无法加载 3D 引擎。请检查网络连接。',
-        equipment:'实验器材', variables:'实验变量', data:'读数', hint:'提示',
-        power:'电源供应器', voltage:'供应电压',
-        view3d:'3D', viewFront:'正视图', viewVector:'向量',
-        catGas:'气体定律', catHeat:'热与温度', catMech:'力学', catElec:'电学',
-        catOptics:'光学', catWaves:'波动', catMisc:'推理',
+        back:'返回', pause:'暫停', play:'播放', rec:'記錄', clear:'清除',
+        points:'數據點', loadFail:'無法加載 3D 引擎。请检查網絡連接。',
+        equipment:'實驗器材', variables:'實驗變量', data:'讀數', hint:'提示',
+        power:'電源供應器', voltage:'供應電壓',
+        view3d:'3D', viewFront:'正视圖', viewVector:'向量',
+        catGas:'氣體定律', catHeat:'熱與溫度', catMech:'力学', catElec:'電学',
+        catOptics:'光学', catWaves:'波動', catMisc:'推理',
         slope:'斜率'
       }
     };
@@ -166,37 +165,37 @@ import { MANUALS } from '../data/manuals.js';
 
     /* ---------- HUD / 圖表標籤本地化（不改動 15 個實驗的數學模型） ---------- */
     const HUD_I18N = {
-      'Supply':      { tc:'供應',   sc:'供应' },
-      'Phase':       { tc:'狀態',   sc:'状态' },
+      'Supply':      { tc:'供應',   sc:'供應' },
+      'Phase':       { tc:'狀態',   sc:'状態' },
       'Ice melted':  { tc:'已熔化', sc:'已熔化' },
       'L_f est.':    { tc:'L_f 估算', sc:'L_f 估算' },
-      'T at hot end':{ tc:'熱端溫度', sc:'热端温度' },
-      'T at mid':    { tc:'中段溫度', sc:'中段温度' },
-      'T at far end':{ tc:'遠端溫度', sc:'远端温度' },
+      'T at hot end':{ tc:'熱端溫度', sc:'熱端溫度' },
+      'T at mid':    { tc:'中段溫度', sc:'中段溫度' },
+      'T at far end':{ tc:'遠端溫度', sc:'遠端溫度' },
       'Power':       { tc:'功率',   sc:'功率' },
       'Flow':        { tc:'流向',   sc:'流向' },
-      'T black':     { tc:'黑色表面溫度', sc:'黑色表面温度' },
-      'T shiny':     { tc:'光亮表面溫度', sc:'光亮表面温度' },
-      'T inside':    { tc:'箱內溫度', sc:'箱内温度' },
-      'T outside':   { tc:'箱外溫度', sc:'箱外温度' },
+      'T black':     { tc:'黑色表面溫度', sc:'黑色表面溫度' },
+      'T shiny':     { tc:'光亮表面溫度', sc:'光亮表面溫度' },
+      'T inside':    { tc:'箱內溫度', sc:'箱内溫度' },
+      'T outside':   { tc:'箱外溫度', sc:'箱外溫度' },
       'Formula':     { tc:'公式',   sc:'公式' },
       'Verdict':     { tc:'判定',   sc:'判定' }
     };
     const HUD_VALUE_I18N = {
-      'solid':     { tc:'固態',   sc:'固态' },
+      'solid':     { tc:'固態',   sc:'固態' },
       'melting':   { tc:'熔化中', sc:'熔化中' },
-      'liquid':    { tc:'液態',   sc:'液态' },
+      'liquid':    { tc:'液態',   sc:'液態' },
       'Static':    { tc:'靜止',   sc:'静止' },
       'Rising left, sinking right': { tc:'左升右沉', sc:'左升右沉' },
       '✓ consistent':     { tc:'✓ 一致',   sc:'✓ 一致' },
       '✗ NOT consistent': { tc:'✗ 不一致', sc:'✗ 不一致' }
     };
     const AXIS_I18N = {
-      'Time (s)':      { tc:'時間 (s)',       sc:'时间 (s)' },
+      'Time (s)':      { tc:'時間 (s)',       sc:'時間 (s)' },
       'Angle (°)':     { tc:'角度 (°)',       sc:'角度 (°)' },
       'Position (cm)': { tc:'位置 (cm)',      sc:'位置 (cm)' },
       'Range (m)':     { tc:'射程 (m)',       sc:'射程 (m)' },
-      'Speed (arb.)':  { tc:'速度 (任意單位)', sc:'速度 (任意单位)' }
+      'Speed (arb.)':  { tc:'速度 (任意單位)', sc:'速度 (任意單位)' }
     };
     function trLabel(map, key) {
       if (lang === 'en' || key == null) return key;
@@ -345,9 +344,10 @@ import { MANUALS } from '../data/manuals.js';
     }
 
     function toonMat(color) {
-      return new THREE.MeshToonMaterial({
+      return new THREE.MeshStandardMaterial({
         color,
-        gradientMap: getToonGradientMap(),
+        metalness: 0.45,
+        roughness: 0.3,
       });
     }
 
@@ -366,7 +366,7 @@ import { MANUALS } from '../data/manuals.js';
       black: () => toonMat(0x374151),
       red: () => toonMat(0xef7b72),
       glass: () => new THREE.MeshPhysicalMaterial({
-        color: 0xdbeafe, transparent: true, opacity: 0.32,
+        color: 0xdbeafe, transparent: true, opacity: 0.4,
         roughness: 0.05, metalness: 0.0, transmission: 0.65,
         ior: 1.5, thickness: 0.25, side: THREE.DoubleSide,
         depthWrite: false, envMapIntensity: 1.3
@@ -1308,6 +1308,14 @@ import { MANUALS } from '../data/manuals.js';
             <aside id="sidebar"></aside>
             <div id="stage">
               <div id="viewport">
+                <div id="lab-loading" class="lab-loading" role="status" aria-live="polite">
+                  <div class="lab-loading-card">
+                    <div class="lab-loading-kicker">PHYVERSE · LABORATORY NOTEBOOK</div>
+                    <div class="lab-loading-text" id="lab-loading-text">${lang === 'en' ? 'Loading apparatus…' : '正在翻開實驗器材…'}</div>
+                    <div class="lab-loading-rule"></div>
+                    <div class="lab-loading-sub">${lang === 'en' ? 'INK · PAPER · GEOMETRY' : '墨線 · 紙張 · 幾何'}</div>
+                  </div>
+                </div>
                 <div id="view-switch" class="overlay">
                   <button data-view="3d" class="on" data-i18n="view3d">${t('view3d')}</button>
                   <button data-view="front" data-i18n="viewFront">${t('viewFront')}</button>
@@ -1473,6 +1481,26 @@ import { MANUALS } from '../data/manuals.js';
       controls.target.set(...tgt);
       controls.update();
     }
+
+    function showLabLoading() {
+      const el = activeContainer && activeContainer.querySelector('#lab-loading');
+      if (!el) return;
+      el.classList.remove('is-hidden');
+      el.style.display = 'grid';
+      const text = activeContainer.querySelector('#lab-loading-text');
+      if (text) text.textContent = lang === 'en' ? 'Loading apparatus…' : '正在翻開實驗器材…';
+    }
+
+    function hideLabLoading(delay = 260) {
+      setTimeout(() => {
+        const el = activeContainer && activeContainer.querySelector('#lab-loading');
+        if (!el) return;
+        el.classList.add('is-hidden');
+        setTimeout(() => { if (el.classList.contains('is-hidden')) el.style.display = 'none'; }, 420);
+      }, delay);
+    }
+
+    window.addEventListener('phyverse-apparatus-ready', () => { hideLabLoading(180); });
 
     /* ---------- Shared Sidebar Helpers ---------- */
     function sliderHTML(id, label, min, max, step, val, unit, locked) {
@@ -2168,6 +2196,7 @@ import { MANUALS } from '../data/manuals.js';
             if (!exp.equip) exp.equip = {};
             exp.equipment.forEach(e => { if (exp.equip[e.id] === undefined) exp.equip[e.id] = true; });
 
+            showLabLoading();
             clearRoot();
             trail = [];
             marks = [];
@@ -2179,6 +2208,11 @@ import { MANUALS } from '../data/manuals.js';
             if (controls) controls.enableRotate = true;
 
             if (typeof exp.init === 'function') exp.init();
+            if (typeof exp.afterInitCamera === 'function') exp.afterInitCamera();
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            root3d.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+            applyPaperScene(scene, root3d, renderer);
 
             renderSidebar();
             renderHUD();

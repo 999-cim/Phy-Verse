@@ -14,24 +14,24 @@ import { loadHandbookGLB, applyPaperScene } from '../toonify.js';
 export default {
   id:'snell',
   cat:'optics',
-  title:{ en:"Snell's Law · n₁sin θ₁ = n₂sin θ₂", tc:'司乃耳定律 · n₁sin θ₁ = n₂sin θ₂', sc:'斯涅尔定律 · n₁sin θ₁ = n₂sin θ₂' },
+  title:{ en:"Snell's Law · n₁sin θ₁ = n₂sin θ₂", tc:'司乃耳定律 · n₁sin θ₁ = n₂sin θ₂', sc:'斯涅爾定律 · n₁sin θ₁ = n₂sin θ₂' },
   desc:{ en:'Shine a ray at a glass block. Measure the angles of incidence and refraction.',
          tc:'將光線射向玻璃塊。量度入射角與折射角。',
-         sc:'将光线射向玻璃块。量度入射角与折射角。' },
+         sc:'将光線射向玻璃塊。量度入射角與折射角。' },
   hasPSU:false,
   cam3d:[4,3,7], camFront:{ pos:[0,3,10], tgt:[0,1,0] },
   vectorLegend:[
     [{en:'Incident ray', tc:'入射光', sc:'入射光'}, '#ff5f56'],
     [{en:'Refracted ray', tc:'折射光', sc:'折射光'}, '#4da3ff'],
-    [{en:'Normal', tc:'法線', sc:'法线'}, '#a78bfa']
+    [{en:'Normal', tc:'法線', sc:'法線'}, '#a78bfa']
   ],
   equipment:[
     {id:'laser', name:{en:'Laser', tc:'雷射', sc:'激光'}},
-    {id:'blk', name:{en:'Glass block', tc:'玻璃塊', sc:'玻璃块'}},
+    {id:'blk', name:{en:'Glass block', tc:'玻璃塊', sc:'玻璃塊'}},
     {id:'prot', name:{en:'Protractor', tc:'量角器', sc:'量角器'}},
     {id:'scr', name:{en:'Screen', tc:'光屏', sc:'光屏'}},
     {id:'rh', name:{en:'Rotating holder', tc:'旋轉座', sc:'旋转座'}},
-    {id:'psu', name:{en:'Laser power', tc:'雷射電源', sc:'激光电源'}}
+    {id:'psu', name:{en:'Laser power', tc:'雷射電源', sc:'激光電源'}}
   ],
   variables:[
     {id:'theta1', name:{en:'Angle of incidence', tc:'入射角', sc:'入射角'}, min:0, max:85, step:1, def:30, unit:'°'},
@@ -40,10 +40,10 @@ export default {
   graph:{
     activeType:0,
     types:[
-      { id:'sin', label:{en:'sin θ₁ vs sin θ₂', tc:'sin θ₁ 對 sin θ₂', sc:'sin θ₁ 对 sin θ₂'},
+      { id:'sin', label:{en:'sin θ₁ vs sin θ₂', tc:'sin θ₁ 對 sin θ₂', sc:'sin θ₁ 對 sin θ₂'},
         xLabel:'sin θ₂', yLabel:'sin θ₁', xMax:1, xFmt:1, yFmt:1, slopeUnit:'n₂/n₁',
         current(){ return { x: Math.sin(this.theta2()*Math.PI/180), y: Math.sin(this.vars.theta1*Math.PI/180) }; } },
-      { id:'th', label:{en:'θ₁ vs θ₂', tc:'θ₁ 對 θ₂', sc:'θ₁ 对 θ₂'},
+      { id:'th', label:{en:'θ₁ vs θ₂', tc:'θ₁ 對 θ₂', sc:'θ₁ 對 θ₂'},
         xLabel:'θ₂ (°)', yLabel:'θ₁ (°)', xMax:60, xFmt:0, yFmt:0, slopeUnit:'',
         current(){ return { x:this.theta2(), y:this.vars.theta1 }; } }
     ],
@@ -155,7 +155,7 @@ export default {
     h += '<div class="card"><div class="card-head"><h3>' + t('hint') + '</h3></div><div class="hint-text">' +
       T({ en:'Plot sin θ₁ vs sin θ₂ — the slope equals n₂/n₁.',
           tc:'將 sin θ₁ 對 sin θ₂ 作圖 — 斜率等於 n₂/n₁。',
-          sc:'将 sin θ₁ 对 sin θ₂ 作图 — 斜率等于 n₂/n₁。' }) + '</div></div>';
+          sc:'将 sin θ₁ 對 sin θ₂ 作圖 — 斜率等于 n₂/n₁。' }) + '</div></div>';
     return h;
   },
   bindSidebar(el) {

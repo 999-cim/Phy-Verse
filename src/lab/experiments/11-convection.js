@@ -75,10 +75,10 @@ function mergeThermometerTicks(group) {
 export default {
   id:'convection',
   cat:'heat',
-  title:{ en:'Convection Currents', tc:'對流', sc:'对流' },
+  title:{ en:'Convection Currents', tc:'對流', sc:'對流' },
   desc:{ en:'Watch coloured fluid rise and fall as it is heated and cooled — a convection current.',
          tc:'觀察有色流體受熱上升、冷卻下降 — 對流循環。',
-         sc:'观察有色流体受热上升、冷却下降 — 对流循环。' },
+         sc:'观察有色流體受熱上升、冷却下降 — 對流循环。' },
   hasPSU:true,
   cam3d:[0,3,7], camFront:{ pos:[0,2.5,9], tgt:[0,2.5,0] },
   vectorLegend:[
@@ -87,11 +87,11 @@ export default {
   ],
   equipment:[
     {id:'tank', name:{en:'Glass tank', tc:'玻璃缸', sc:'玻璃缸'}},
-    {id:'water', name:{en:'Water + dye', tc:'水與染料', sc:'水与染料'}},
-    {id:'htr', name:{en:'Heater', tc:'加熱器', sc:'加热器'}},
+    {id:'water', name:{en:'Water + dye', tc:'水與染料', sc:'水與染料'}},
+    {id:'htr', name:{en:'Heater', tc:'加熱器', sc:'加熱器'}},
     {id:'ice', name:{en:'Ice', tc:'冰', sc:'冰'}},
-    {id:'psu', name:{en:'Power supply', tc:'電源', sc:'电源'}},
-    {id:'th', name:{en:'Thermometer', tc:'溫度計', sc:'温度计'}}
+    {id:'psu', name:{en:'Power supply', tc:'電源', sc:'電源'}},
+    {id:'th', name:{en:'Thermometer', tc:'溫度計', sc:'溫度計'}}
   ],
   variables:[
     {id:'dye', name:{en:'Dye brightness', tc:'染料亮度', sc:'染料亮度'}, min:0.2, max:1, step:0.05, def:0.7, unit:''}
@@ -99,7 +99,7 @@ export default {
   graph:{
     activeType:0,
     types:[
-      { id:'conv', label:{en:'Current speed vs V', tc:'流速 對 V', sc:'流速 对 V'},
+      { id:'conv', label:{en:'Current speed vs V', tc:'流速 對 V', sc:'流速 對 V'},
         xLabel:'V (V)', yLabel:'Speed (arb.)', xMax:24, xFmt:0, yFmt:2, slopeUnit:'',
         current(){ return { x:this.voltage, y: this.voltage*this.voltage/400 }; } }
     ],
@@ -260,9 +260,10 @@ export default {
     for (let i = 0; i < P.N; i++) {
       P.u[i] = (P.u[i] + speed * dt) % 1;
       const pt = this._loopPoint(P.u[i]);
-      arr[i*3]   = pt.x;
-      arr[i*3+1] = pt.y;
-      arr[i*3+2] = pt.z;
+      const tt = this.t * 1.4 + i * 1.7;
+      arr[i*3]   = pt.x + Math.sin(tt * 1.7 + P.u[i] * 9) * 0.16;
+      arr[i*3+1] = pt.y + Math.sin(tt * 1.3 + i * 0.8) * 0.18;
+      arr[i*3+2] = pt.z + Math.cos(tt * 1.5 + P.u[i] * 11) * 0.22;
     }
     P.geo.attributes.position.needsUpdate = true;
     if (this._heater) {
@@ -295,7 +296,7 @@ export default {
     h += '<div class="card"><div class="card-head"><h3>' + t('hint') + '</h3></div><div class="hint-text">' +
       T({ en:'Raise the <b>voltage</b> to speed up the convection loop. Warm water rises on the left, cools and sinks on the right.',
           tc:'提高<b>電壓</b>加快對流循環。左側暖水上升，右側冷卻下沉。',
-          sc:'提高<b>电压</b>加快对流循环。左侧暖水上升，右侧冷却下沉。' }) +
+          sc:'提高<b>電壓</b>加快對流循环。左侧暖水上升，右侧冷却下沉。' }) +
       '</div></div>';
     return h;
   },

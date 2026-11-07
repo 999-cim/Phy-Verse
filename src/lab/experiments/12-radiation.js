@@ -1,5 +1,5 @@
 import {
-  THREE, T, t, lang, root3d, camera, viewMode, marks, trail,
+  THREE, T, t, lang, root3d, camera, viewMode, marks, trail, scene, renderer,
   MAT, rbox, lathe, barBetween, makeCanvas, slottedMassMesh, createMassStack,
   addGraduation, createGraduatedCylinder, createPiston, createPSU, createMeter,
   createResistor, createPCB, createRetortStand, helixPoints, createHelicalSpring,
@@ -9,22 +9,23 @@ import {
   sliderHTML, bindSliders, chkHTML, bindChks, renderSidebar, renderHUD, updatePtCount,
   refreshPlayBtn, populateGraphSelect, drawGraph, setCamera3D, setViewMode,
 } from '../engine.js';
+import { loadHandbookGLB, mountHandbookRoot } from '../toonify.js';
 
 export default {
   id:'radiation',
   cat:'heat',
-  title:{ en:'Thermal Radiation', tc:'熱輻射', sc:'热辐射' },
+  title:{ en:'Thermal Radiation', tc:'熱輻射', sc:'熱輻射' },
   desc:{ en:'Compare how black and shiny surfaces absorb radiation. Black surfaces absorb and emit best.',
          tc:'比較黑色與光亮表面的吸收。黑色表面吸收與輻射最佳。',
-         sc:'比较黑色与光亮表面的吸收。黑色表面吸收与辐射最佳。' },
+         sc:'比较黑色與光亮表面的吸收。黑色表面吸收與輻射最佳。' },
   hasPSU:false,
   cam3d:[4,3,8], camFront:{ pos:[0,3,10], tgt:[0,3,0] },
   vectorLegend:[
-    [{en:'Incident radiation', tc:'入射輻射', sc:'入射辐射'}, '#ffb020'],
-    [{en:'Re-emitted', tc:'再輻射', sc:'再辐射'}, '#ff5f56']
+    [{en:'Incident radiation', tc:'入射輻射', sc:'入射輻射'}, '#ffb020'],
+    [{en:'Re-emitted', tc:'再輻射', sc:'再輻射'}, '#ff5f56']
   ],
   equipment:[
-    {id:'lamp', name:{en:'Heat lamp', tc:'熱燈', sc:'热灯'}},
+    {id:'lamp', name:{en:'Heat lamp', tc:'熱燈', sc:'熱燈'}},
     {id:'blk', name:{en:'Black plate', tc:'黑面版', sc:'黑面板'}},
     {id:'slv', name:{en:'Shiny plate', tc:'光亮面版', sc:'光亮面板'}},
     {id:'th1', name:{en:'T₁', tc:'T₁', sc:'T₁'}},
@@ -32,12 +33,12 @@ export default {
     {id:'stand', name:{en:'Stand', tc:'支架', sc:'支架'}}
   ],
   variables:[
-    {id:'lamp', name:{en:'Lamp intensity', tc:'燈強度', sc:'灯强度'}, min:0, max:1, step:0.05, def:0.7, unit:''}
+    {id:'lamp', name:{en:'Lamp intensity', tc:'燈強度', sc:'燈強度'}, min:0, max:1, step:0.05, def:0.7, unit:''}
   ],
   graph:{
     activeType:0,
     types:[
-      { id:'dT', label:{en:'ΔT vs time', tc:'ΔT 對時間', sc:'ΔT 对时间'},
+      { id:'dT', label:{en:'ΔT vs time', tc:'ΔT 對時間', sc:'ΔT 對時間'},
         xLabel:'Time (s)', yLabel:'ΔT (°C)', xMax:120, xFmt:0, yFmt:1, slopeUnit:'°C/s',
         current(){ return { x:this.t, y:this.Tblk - this.Tslv }; } }
     ],
@@ -51,6 +52,13 @@ export default {
 
     init() {
     const g = root3d;
+    loadHandbookGLB('/models/radiation_apparatus.glb', {
+      outline: { targets: [{ name:'Leslie_Box' }, { name:'IR_Lamp' }]  },
+      onLoad: (root) => {
+        root.position.set(-1.8, 0, 0); mountHandbookRoot(g, root, scene, renderer, { keep: [this._th1 && this._th1.group, this._th2 && this._th2.group] }); this.sync3D(0);
+      }
+    });
+
     addGround();
 
     /* 與黑板/亮板同 z 中心，燈頭自動俯衝對準兩塊板 */
@@ -167,7 +175,7 @@ export default {
     h += '<div class="card"><div class="card-head"><h3>' + t('hint') + '</h3></div><div class="hint-text">' +
       T({ en:'Black surfaces are good absorbers (and good emitters). Shiny surfaces reflect.',
           tc:'黑色表面是良好吸收體（也是良好輻射體）。光亮表面反射。',
-          sc:'黑色表面是良好吸收体（也是良好辐射体）。光亮表面反射。' }) + '</div></div>';
+          sc:'黑色表面是良好吸收體（也是良好輻射體）。光亮表面反射。' }) + '</div></div>';
     return h;
   },
   bindSidebar(el) {

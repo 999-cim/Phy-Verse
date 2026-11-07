@@ -1,5 +1,3 @@
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import {
   AmbientLight,
   BackSide,
@@ -10,12 +8,15 @@ import {
   HemisphereLight,
   Mesh,
   MeshBasicMaterial,
+  MeshStandardMaterial,
+  MeshPhysicalMaterial,
   MeshToonMaterial,
   NearestFilter,
   NoToneMapping,
   PlaneGeometry,
   RepeatWrapping,
   ShaderMaterial,
+  SpotLight,
   SRGBColorSpace,
   ACESFilmicToneMapping,
 } from 'three';
@@ -79,6 +80,19 @@ function toonColorFor(mesh, oldMaterialName) {
   const name = mesh.name || '';
   const weight = ancestorWeightName(mesh);
 
+  if (/Glass_Floor/i.test(name)) return { color: PALETTE.steel };
+  if (/Face_Black|Face_Matte/i.test(name) || /face_black|face_matte/i.test(oldMaterialName)) return { color: 0x2a2c2e };
+  if (/Leslie_Body|Leslie_Base/i.test(name)) return { color: 0x34383c };
+  if (/Face_White/i.test(name)) return { color: 0xfff8ec };
+  if (/Face_Silver/i.test(name)) return { color: 0xbfc6cc };
+  if (/Grass/i.test(name) || /grass/i.test(oldMaterialName)) return { color: 0x7fa86a };
+  if (/Geometry_Rock/i.test(name)) return { color: 0x8d8a80 };
+  if (/Geometry_Cube/i.test(name)) return { color: 0x8ecae6 };
+  if (/Geometry_Sphere/i.test(name)) return { color: 0xd9b77b };
+  if (/Geometry_Cone/i.test(name)) return { color: 0x8d8a80 };
+  if (/Caliper/i.test(name)) return { color: 0xaebac4 };
+  if (/Sun_/i.test(name) || /IR_Lamp/i.test(name)) return { color: 0xe0b887 };
+  if (/Acrylic/i.test(name)) return { color: 0x9fc6cf };
   if (/Glass_Cylinder|Glass|Beaker|Spout|^Cylinder$/i.test(name) || /glass/i.test(oldMaterialName)) {
     return { color: PALETTE.glass, transparent: true, opacity: 0.3, side: DoubleSide, depthWrite: false };
   }
@@ -138,10 +152,8 @@ export function toonifyGLB(root) {
     if (old) oldMaterials.add(old);
 
     const spec = toonColorFor(mesh, oldName);
-    const key = [
-      spec.color, spec.opacity || 1, spec.transparent ? 1 : 0,
-      spec.side || 0, spec.depthWrite === false ? 0 : 1,
-    ].join(':');
+    const isGlass = !!spec.transparent;
+    const key = [spec.color, spec.opacity || 1, spec.transparent ? 1 : 0, spec.side || 0].join(':');
     let mat = cache.get(key);
     if (!mat) {
       mat = new MeshToonMaterial({
@@ -152,13 +164,12 @@ export function toonifyGLB(root) {
         side: spec.side || 0,
         depthWrite: spec.depthWrite !== false,
       });
-      mat.name = 'HANDBOOK_TOON';
-      mat.toneMapped = false;
+      mat.name = isGlass ? 'HANDBOOK_TOON_GLASS' : 'HANDBOOK_TOON';
       cache.set(key, mat);
     }
     mesh.material = mat;
-    mesh.castShadow = false;
-    mesh.receiveShadow = false;
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
   });
 
   // GLB materials and their textures are deliberately discarded.
@@ -271,20 +282,9 @@ export function addInkOutlines(root, options = {}) {
   return { count: targets.length, ink, glassInk };
 }
 
-export function loadHandbookGLB(url, { onLoad, onError, outline } = {}) {
-  const draco = new DRACOLoader();
-  draco.setDecoderPath('/draco/');
-  const loader = new GLTFLoader();
-  loader.setDRACOLoader(draco);
-  loader.load(url, (gltf) => {
-    const root = gltf.scene;
-    toonifyGLB(root);
-    addInkOutlines(root, outline || {});
-    if (onLoad) onLoad(root, gltf);
-  }, undefined, (err) => {
-    console.error('[handbook] GLB load failed:', url, err);
-    if (onError) onError(err);
-  });
+export function loadHandbookGLB(url, { onError } = {}) {
+  // External GLB pipeline intentionally disabled. All 15 labs are procedural.
+  if (onError) onError(new Error('GLB loading disabled'));
 }
 
 function makePaperTexture() {
@@ -341,80 +341,69 @@ export function applyPaperScene(scene, root3d, renderer) {
   const previousToneMapping = renderer.toneMapping;
   const previousExposure = renderer.toneMappingExposure;
 
-  const lights = [];
-  scene.traverse((o) => {
-    if (o.isDirectionalLight || o.isHemisphereLight || o.isAmbientLight) {
-      lights.push({ light: o, visible: o.visible, intensity: o.intensity, castShadow: o.castShadow });
-      o.visible = false;
-      if (o.isLight) o.castShadow = false;
-    }
-  });
-
   const ground = root3d.getObjectByName('lab-ground');
   const groundVisible = ground ? ground.visible : null;
   if (ground) ground.visible = false;
 
-  scene.background = new Color(0xf3ead9);
+  scene.background = new Color(0xe7dccb);
   scene.fog = null;
-  renderer.shadowMap.enabled = false;
-  renderer.toneMapping = NoToneMapping;
-  renderer.toneMappingExposure = 1.0;
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = 2; /* PCFSoftShadowMap */
+  renderer.toneMapping = ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.15;
+  scene.traverse((o) => {
+    if (o.isDirectionalLight || o.isHemisphereLight || o.isAmbientLight) {
+      o.visible = true;
+      if (o.isDirectionalLight) o.castShadow = true;
+      if (o.isHemisphereLight) o.intensity = 0.8;
+    }
+  });
+  const studioSpot = new SpotLight(0xfff2dd, 5.2, 32, Math.PI * 0.24, 0.55, 1.4);
+  studioSpot.name = 'PAPER_studio_spot';
+  studioSpot.position.set(4.5, 8.5, 5.5);
+  studioSpot.target.position.set(0, 1.2, 0);
+  studioSpot.castShadow = true;
+  studioSpot.shadow.mapSize.set(2048, 2048);
+  studioSpot.shadow.camera.near = 0.5;
+  studioSpot.shadow.camera.far = 35;
+  studioSpot.shadow.bias = -0.0004;
+  scene.add(studioSpot, studioSpot.target);
+
 
   const paperTexture = makePaperTexture();
   const paper = new Mesh(
     new PlaneGeometry(80, 80),
-    new MeshBasicMaterial({ map: paperTexture, color: 0xffffff, toneMapped: false })
+    new MeshStandardMaterial({ map: paperTexture, color: 0xd8cbb7, roughness: 0.78, metalness: 0.04 })
   );
   paper.name = 'PAPER_floor';
   paper.rotation.x = -Math.PI / 2;
   paper.position.y = -0.005;
-  paper.receiveShadow = false;
+  paper.receiveShadow = true;
   paper.renderOrder = -2;
   root3d.add(paper);
 
-  const shadowTexture = makeSoftShadowTexture();
-  const shadow = new Mesh(
-    new PlaneGeometry(8.5, 6.5),
-    new MeshBasicMaterial({
-      map: shadowTexture,
-      transparent: true,
-      opacity: 1,
-      depthWrite: false,
-      toneMapped: false,
-    })
+  const contactTex = makeSoftShadowTexture();
+  const contact = new Mesh(
+    new PlaneGeometry(8.0, 6.0),
+    new MeshBasicMaterial({ map: contactTex, color: 0x6b5a48, transparent: true, opacity: 0.5, depthWrite: false, toneMapped: false })
   );
-  shadow.name = 'PAPER_soft_shadow';
-  shadow.rotation.x = -Math.PI / 2;
-  shadow.position.set(0.35, 0.004, 0.1);
-  shadow.renderOrder = -1;
-  root3d.add(shadow);
-
-  const ambient = new AmbientLight(0xfff7e8, 0.65);
-  ambient.name = 'PAPER_ambient';
-  const hemi = new HemisphereLight(0xfff5e5, 0xa69783, 2.0);
-  hemi.name = 'PAPER_hemi';
-  const key = new DirectionalLight(0xfff1d6, 0.9);
-  key.name = 'PAPER_key';
-  key.position.set(4, 8, 6);
-  key.castShadow = false;
-  scene.add(ambient, hemi, key);
+  contact.name = 'PAPER_soft_shadow';
+  contact.rotation.x = -Math.PI / 2;
+  contact.position.set(0, 0.003, 0);
+  contact.renderOrder = -1;
+  root3d.add(contact);
 
   const restore = () => {
     if (paper.parent) paper.parent.remove(paper);
-    if (shadow.parent) shadow.parent.remove(shadow);
+    if (contact.parent) contact.parent.remove(contact);
+    contact.geometry.dispose();
+    contact.material.map?.dispose();
+    contact.material.dispose();
     paper.geometry.dispose();
     paper.material.map?.dispose();
     paper.material.dispose();
-    shadow.geometry.dispose();
-    shadow.material.map?.dispose();
-    shadow.material.dispose();
-    scene.remove(ambient, hemi, key);
-    for (const entry of lights) {
-      entry.light.visible = entry.visible;
-      entry.light.intensity = entry.intensity;
-      entry.light.castShadow = entry.castShadow;
-    }
     if (ground) ground.visible = groundVisible;
+    scene.remove(studioSpot, studioSpot.target);
     scene.background = previousBackground;
     scene.fog = previousFog;
     renderer.shadowMap.enabled = previousShadowEnabled;
@@ -426,4 +415,13 @@ export function applyPaperScene(scene, root3d, renderer) {
 
   root3d.userData.paperRestore = restore;
   return restore;
+}
+
+
+export function mountHandbookRoot(root3d, root, scene, renderer, { hideOld = true, keep = [] } = {}) {
+  const keepSet = new Set(keep.filter(Boolean));
+  const old = hideOld ? [...root3d.children].filter(o => o.name !== 'lab-ground' && !keepSet.has(o)) : [];
+  root3d.add(root);
+  for (const o of old) root3d.remove(o);
+  applyPaperScene(scene, root3d, renderer);
 }

@@ -1,5 +1,5 @@
 import {
-  THREE, T, t, lang, root3d, camera, viewMode, marks, trail,
+  THREE, T, t, lang, root3d, camera, viewMode, marks, trail, scene, renderer,
   MAT, rbox, lathe, barBetween, makeCanvas, slottedMassMesh, createMassStack,
   addGraduation, createGraduatedCylinder, createPiston, createPSU, createMeter,
   createResistor, createPCB, createRetortStand, helixPoints, createHelicalSpring,
@@ -9,34 +9,35 @@ import {
   sliderHTML, bindSliders, chkHTML, bindChks, renderSidebar, renderHUD, updatePtCount,
   refreshPlayBtn, populateGraphSelect, drawGraph, setCamera3D, setViewMode,
 } from '../engine.js';
+import { loadHandbookGLB, mountHandbookRoot } from '../toonify.js';
 
 export default {
   id:'conduction',
   cat:'heat',
-  title:{ en:'Conduction Through a Rod', tc:'金屬棒的傳導', sc:'金属棒的传导' },
+  title:{ en:'Conduction Through a Rod', tc:'金屬棒的傳導', sc:'金属棒的傳導' },
   desc:{ en:'Heat one end of a rod. Observe the temperature gradient along it and how different metals conduct.',
          tc:'加熱金屬棒的一端。觀察沿棒的溫度梯度以及不同金屬的傳導。',
-         sc:'加热金属棒的一端。观察沿棒的温度梯度以及不同金属的传导。' },
+         sc:'加熱金属棒的一端。观察沿棒的溫度梯度以及不同金属的傳導。' },
   hasPSU:true,
   cam3d:[0,3,8], camFront:{ pos:[0,2.5,10], tgt:[0,2.5,0] },
   vectorLegend:[
-    [{en:'Heat flow', tc:'熱流', sc:'热流'}, '#ff5f56']
+    [{en:'Heat flow', tc:'熱流', sc:'熱流'}, '#ff5f56']
   ],
   equipment:[
     {id:'rod', name:{en:'Metal rod', tc:'金屬棒', sc:'金属棒'}},
-    {id:'htr', name:{en:'Heater', tc:'加熱器', sc:'加热器'}},
-    {id:'psu', name:{en:'Power supply', tc:'電源', sc:'电源'}},
-    {id:'th1', name:{en:'T₁ thermometer', tc:'T₁ 溫度計', sc:'T₁ 温度计'}},
-    {id:'th2', name:{en:'T₂ thermometer', tc:'T₂ 溫度計', sc:'T₂ 温度计'}},
+    {id:'htr', name:{en:'Heater', tc:'加熱器', sc:'加熱器'}},
+    {id:'psu', name:{en:'Power supply', tc:'電源', sc:'電源'}},
+    {id:'th1', name:{en:'T₁ thermometer', tc:'T₁ 溫度計', sc:'T₁ 溫度計'}},
+    {id:'th2', name:{en:'T₂ thermometer', tc:'T₂ 溫度計', sc:'T₂ 溫度計'}},
     {id:'clamp', name:{en:'Clamps', tc:'夾具', sc:'夹具'}}
   ],
   variables:[
-    {id:'k', name:{en:'Thermal conductivity k', tc:'導熱率 k', sc:'导热率 k'}, min:10, max:400, step:5, def:200, unit:' W/m·K'}
+    {id:'k', name:{en:'Thermal conductivity k', tc:'導熱率 k', sc:'導熱率 k'}, min:10, max:400, step:5, def:200, unit:' W/m·K'}
   ],
   graph:{
     activeType:0,
     types:[
-      { id:'tx', label:{en:'T along rod', tc:'沿棒的溫度', sc:'沿棒的温度'},
+      { id:'tx', label:{en:'T along rod', tc:'沿棒的溫度', sc:'沿棒的溫度'},
         xLabel:'Position (cm)', yLabel:'T (°C)', xMax:100, xFmt:0, yFmt:0, slopeUnit:'°C/cm',
         current(){ return { x:50, y:this.T_at(0.5) - 273 }; } }
     ],
@@ -55,6 +56,13 @@ export default {
   },
    init() {
     const g = root3d;
+    loadHandbookGLB('/models/conduction_apparatus.glb', {
+      outline: { targets: [{ name:'Rod_Copper' }, { name:'Rod_Aluminium' }, { name:'Rod_Steel' }, { name:'Heat_Source' }]  },
+      onLoad: (root) => {
+        mountHandbookRoot(g, root, scene, renderer, { keep: [this._psuGroup] }); this._rod = root.getObjectByName('Rod_Copper'); this.sync3D(0);
+      }
+    });
+
     addGround();
     /* 金屬棒：倒角桿身 + 兩端銅環 + 隔熱手柄 */
     const rodMat = new THREE.MeshPhysicalMaterial({ color: 0xc3cbd6, metalness: 0.92, roughness: 0.22, envMapIntensity: 1.15 });
@@ -99,6 +107,7 @@ export default {
     const psu = createPSU({ w: 1.4, h: 1.0, d: 0.9, screenW: 1.0, screenH: 0.55 });
     psu.group.position.set(-2.6, 0, 0.9);
     g.add(psu.group);
+    this._psuGroup = psu.group;
     this._psuCtx = psu.ctx; this._psuTex = psu.tex; this._psuScreen = psu.screen;
     g.add(createWire([[-2.2, 0.45, 0.7], [-1.5, 0.6, 0.3], [-0.7, 1.3, 0.15]], 0xcc3333, 0.035));
     g.add(createWire([[-2.8, 0.45, 0.7], [-1.9, 0.6, -0.2], [-0.7, 1.7, 0.15]], 0x22282f, 0.035));

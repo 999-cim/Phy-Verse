@@ -17,32 +17,32 @@ export default {
   title:{ en:"Charles's Law · V ∝ T", tc:'查理定律 · V ∝ T', sc:'查理定律 · V ∝ T' },
   desc:{ en:'Heat a trapped gas at constant pressure. Volume expands proportionally to absolute temperature.',
          tc:'在定壓下加熱密閉氣體。體積與絕對溫度成正比。',
-         sc:'在定压下加热密闭气体。体积与绝对温度成正比。' },
+         sc:'在定壓下加熱密閉氣體。體積與绝對溫度成正比。' },
   hasPSU:true,
   cam3d:[8,7,11], camFront:{ pos:[0,3.2,15], tgt:[0,3.2,0] },
   vectorLegend:[
-    [{en:'Gas pressure force', tc:'氣體壓力', sc:'气体压力'}, '#ff5f56'],
-    [{en:'External pressure force', tc:'外加壓力', sc:'外加压力'}, '#4da3ff']
+    [{en:'Gas pressure force', tc:'氣體壓力', sc:'氣體壓力'}, '#ff5f56'],
+    [{en:'External pressure force', tc:'外加壓力', sc:'外加壓力'}, '#4da3ff']
   ],
   equipment:[
-    {id:'cyl', name:{en:'Glass cylinder', tc:'玻璃氣缸', sc:'玻璃气缸'}},
+    {id:'cyl', name:{en:'Glass cylinder', tc:'玻璃氣缸', sc:'玻璃氣缸'}},
     {id:'pist', name:{en:'Free piston', tc:'自由活塞', sc:'自由活塞'}},
-    {id:'gas', name:{en:'Trapped gas', tc:'密閉氣體', sc:'密闭气体'}},
-    {id:'ht', name:{en:'Heating coil', tc:'加熱線圈', sc:'加热线圈'}},
-    {id:'psu', name:{en:'Power supply (V)', tc:'電源供應器', sc:'电源供应器'}},
-    {id:'th', name:{en:'Thermometer', tc:'溫度計', sc:'温度计'}}
+    {id:'gas', name:{en:'Trapped gas', tc:'密閉氣體', sc:'密閉氣體'}},
+    {id:'ht', name:{en:'Heating coil', tc:'加熱線圈', sc:'加熱線圈'}},
+    {id:'psu', name:{en:'Power supply (V)', tc:'電源供應器', sc:'電源供應器'}},
+    {id:'th', name:{en:'Thermometer', tc:'溫度計', sc:'溫度計'}}
   ],
   variables:[
-    {id:'n', name:{en:'Amount of gas', tc:'莫耳數', sc:'摩尔数'}, min:0.03, max:0.10, step:0.005, def:0.05, unit:' mol', locked:true},
-    {id:'pext', name:{en:'External pressure', tc:'外加壓力', sc:'外加压力'}, min:80, max:200, step:5, def:100, unit:' kPa', locked:true}
+    {id:'n', name:{en:'Amount of gas', tc:'莫耳數', sc:'摩爾數'}, min:0.03, max:0.10, step:0.005, def:0.05, unit:' mol', locked:true},
+    {id:'pext', name:{en:'External pressure', tc:'外加壓力', sc:'外加壓力'}, min:80, max:200, step:5, def:100, unit:' kPa', locked:true}
   ],
   graph:{
     activeType:0,
     types:[
-      { id:'vt', label:{en:'V vs T', tc:'V 對 T', sc:'V 对 T'},
+      { id:'vt', label:{en:'V vs T', tc:'V 對 T', sc:'V 對 T'},
         xLabel:'T (K)', yLabel:'V (L)', xMax:500, xFmt:0, yFmt:2, slopeUnit:'L/K',
         current(){ return { x:this.vars.T, y:this.V }; } },
-      { id:'vtc', label:{en:'V vs T (°C)', tc:'V 對 T (°C)', sc:'V 对 T (°C)'},
+      { id:'vtc', label:{en:'V vs T (°C)', tc:'V 對 T (°C)', sc:'V 對 T (°C)'},
         xLabel:'T (°C)', yLabel:'V (L)', xMax:230, xFmt:0, yFmt:2, slopeUnit:'L/°C',
         current(){ return { x:this.vars.T - 273, y:this.V }; } }
     ],
@@ -90,10 +90,12 @@ export default {
       vel[i*3+2] = Math.sin(th)*Math.sin(ph);
     }
     pGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-    this._particles = { geo:pGeo, vel, N, R };
+    const pColors = new Float32Array(N * 3);
+    pGeo.setAttribute('color', new THREE.BufferAttribute(pColors, 3));
+    this._particles = { geo:pGeo, vel, N, R, colors:pColors };
     const pMat = new THREE.PointsMaterial({
-      size: 0.16, map: pTex, transparent: true, depthWrite: false,
-      blending: THREE.AdditiveBlending, sizeAttenuation: true, opacity: 0.9, color: 0x7fc0ff
+      size: 0.22, map: pTex, transparent: true, depthWrite: false, vertexColors: true,
+      blending: THREE.AdditiveBlending, sizeAttenuation: true, opacity: 1.0, color: 0xffffff
     });
     const points = new THREE.Points(pGeo, pMat);
     g.add(points);
@@ -117,15 +119,8 @@ export default {
       onLoad: (root) => {
         const glass = root.getObjectByName('Cylinder');
         if (!glass) return;
-        const box = new THREE.Box3().setFromObject(glass);
-        const w = Math.max(0.001, box.max.x - box.min.x);
-        const h = Math.max(0.001, box.max.y - box.min.y);
-        const cx = (box.min.x + box.max.x) / 2;
-        const cz = (box.min.z + box.max.z) / 2;
-        const sx = (R * 2) / w;
-        const sy = H / h;
-        root.scale.set(sx, sy, sx);
-        root.position.set(-cx * sx, -box.min.y * sy, -cz * sx);
+        root.scale.set(1.0, 1.0, 1.0);
+        root.position.set(0, 0, 0);
         g.add(root);
         this._assetRoot = root;
         this._assetScaleY = sy;
@@ -223,6 +218,14 @@ export default {
     if (this._coilGlow) {
       this._coilGlow.material.opacity = this.voltage > 0 ? 0.15 + heatFrac * 0.55 : heatFrac * 0.3;
     }
+    if (this._coil && this._coil.material) {
+      const on = this.voltage > 0;
+      this._coil.material.color.setHex(on ? 0xff5a3c : 0x8a5a46);
+      if (this._coil.material.emissive) {
+        this._coil.material.emissive.setHex(on ? 0x8a1f0c : 0x000000);
+        this._coil.material.emissiveIntensity = on ? 0.9 : 0;
+      }
+    }
     if (this._pointsMat) {
       this._pointsMat.color.setHSL(0.58 - heatFrac * 0.45, 0.85, 0.6);
     }
@@ -250,8 +253,12 @@ export default {
         }
         if (y < 0.12) { pt.vel[i*3+1] = Math.abs(pt.vel[i*3+1]); arr[i*3+1] = 0.12; }
         if (y > topY - 0.08) { pt.vel[i*3+1] = -Math.abs(pt.vel[i*3+1]); arr[i*3+1] = topY - 0.08; }
+        const ht = Math.max(0, Math.min(1, (y - 0.12) / Math.max(0.2, topY - 0.2)));
+        const cc = new THREE.Color().setHSL(0.0 + ht * 0.58, 0.9, 0.48 + ht * 0.36);
+        pt.colors[i*3] = cc.r; pt.colors[i*3+1] = cc.g; pt.colors[i*3+2] = cc.b;
       }
       pt.geo.attributes.position.needsUpdate = true;
+      if (pt.geo.attributes.color) pt.geo.attributes.color.needsUpdate = true;
     }
 
     /* arrows */
@@ -302,7 +309,7 @@ export default {
     h += '<div class="card"><div class="card-head"><h3>' + t('hint') + '</h3></div><div class="hint-text">' +
       T({ en:'Raise the <b>voltage</b> to heat the gas. Watch V grow linearly with absolute temperature.',
           tc:'提高<b>電壓</b>加熱氣體。觀察 V 隨絕對溫度線性增長。',
-          sc:'提高<b>电压</b>加热气体。观察 V 随绝对温度线性增长。' }) +
+          sc:'提高<b>電壓</b>加熱氣體。观察 V 随绝對溫度線性增長。' }) +
       '</div></div>';
     return h;
   },

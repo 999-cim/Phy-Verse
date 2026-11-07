@@ -1,5 +1,5 @@
 import {
-  THREE, T, t, lang, root3d, camera, viewMode, marks, trail,
+  THREE, T, t, lang, root3d, camera, viewMode, marks, trail, scene, renderer,
   MAT, rbox, lathe, barBetween, makeCanvas, slottedMassMesh, createMassStack,
   addGraduation, createGraduatedCylinder, createPiston, createPSU, createMeter,
   createResistor, createPCB, createRetortStand, helixPoints, createHelicalSpring,
@@ -9,14 +9,15 @@ import {
   sliderHTML, bindSliders, chkHTML, bindChks, renderSidebar, renderHUD, updatePtCount,
   refreshPlayBtn, populateGraphSelect, drawGraph, setCamera3D, setViewMode,
 } from '../engine.js';
+import { loadHandbookGLB, mountHandbookRoot } from '../toonify.js';
 
 export default {
   id:'projectile',
   cat:'mech',
-  title:{ en:'Projectile Motion', tc:'拋體運動', sc:'抛体运动' },
+  title:{ en:'Projectile Motion', tc:'拋體運動', sc:'拋體运動' },
   desc:{ en:'Launch a ball. See how range depends on angle and speed, independent of mass.',
          tc:'發射小球。觀察射程如何取決於角度與速度，與質量無關。',
-         sc:'发射小球。观察射程如何取决于角度与速度，与质量无关。' },
+         sc:'發射小球。观察射程如何取决于角度與速度，與質量無關。' },
   hasPSU:false,
   cam3d:[0,4.2,8.6], camFront:{ pos:[0,3.2,11], tgt:[0,3.2,0] },
   vectorLegend:[
@@ -24,24 +25,24 @@ export default {
     [{en:'Gravity', tc:'重力', sc:'重力'}, '#ff5f56']
   ],
   equipment:[
-    {id:'launcher', name:{en:'Spring launcher', tc:'彈簧發射器', sc:'弹簧发射器'}},
+    {id:'launcher', name:{en:'Spring launcher', tc:'彈簧發射器', sc:'彈簧發射器'}},
     {id:'ball', name:{en:'Ball', tc:'小球', sc:'小球'}},
     {id:'prot', name:{en:'Protractor', tc:'量角器', sc:'量角器'}},
-    {id:'grid', name:{en:'Grid floor', tc:'網格地板', sc:'网格地板'}},
-    {id:'cam', name:{en:'Video camera', tc:'攝影機', sc:'摄像机'}},
+    {id:'grid', name:{en:'Grid floor', tc:'網格地板', sc:'網格地板'}},
+    {id:'cam', name:{en:'Video camera', tc:'攝影機', sc:'摄像機'}},
     {id:'ruler', name:{en:'Ruler', tc:'尺', sc:'尺'}}
   ],
   variables:[
-    {id:'angle', name:{en:'Launch angle', tc:'發射角度', sc:'发射角度'}, min:5, max:85, step:1, def:45, unit:'°'},
-    {id:'speed', name:{en:'Launch speed', tc:'發射速度', sc:'发射速度'}, min:3, max:20, step:0.5, def:10, unit:' m/s'}
+    {id:'angle', name:{en:'Launch angle', tc:'發射角度', sc:'發射角度'}, min:5, max:85, step:1, def:45, unit:'°'},
+    {id:'speed', name:{en:'Launch speed', tc:'發射速度', sc:'發射速度'}, min:3, max:20, step:0.5, def:10, unit:' m/s'}
   ],
   graph:{
     activeType:0,
     types:[
-      { id:'range', label:{en:'Range vs angle', tc:'射程 對 角度', sc:'射程 对 角度'},
+      { id:'range', label:{en:'Range vs angle', tc:'射程 對 角度', sc:'射程 對 角度'},
         xLabel:'Angle (°)', yLabel:'Range (m)', xMax:90, xFmt:0, yFmt:1, slopeUnit:'',
         current(){ return { x:this.vars.angle, y:this.range() }; } },
-          { id:'y', label:{en:'Y vs X', tc:'Y 對 X', sc:'Y 对 X'},
+          { id:'y', label:{en:'Y vs X', tc:'Y 對 X', sc:'Y 對 X'},
               xLabel:'X (m)', yLabel:'Y (m)', xMax:40, xFmt:1, yFmt:1, slopeUnit:'',
               current(){ return this._lastPos || { x:0, y:0 }; } } 
     ],
@@ -56,6 +57,13 @@ export default {
 
   init() {
     const g = root3d;
+    loadHandbookGLB('/models/projectile_apparatus.glb', {
+      outline: { targets: [{ name:'Launcher' }, { name:'Projectile_Ball' }]  },
+      onLoad: (root) => {
+        mountHandbookRoot(g, root, scene, renderer); this._ball = root.getObjectByName('Projectile_Ball'); this._barrelPivot = root.getObjectByName('Launcher_Pivot'); this._reset(); this.sync3D(0);
+      }
+    });
+
     addGround(24, 24);
     /* 彈簧拋射砲台：底座、俯仰軸、角度尺、金屬砲管 */
     const launcher = createLauncher();
@@ -129,7 +137,7 @@ export default {
     h += '<div class="card"><div class="card-head"><h3>' + t('hint') + '</h3></div><div class="hint-text">' +
       T({ en:'Maximum range is at 45°. Complementary angles (30° and 60°) give the same range.',
           tc:'最大射程在 45°。互補角度（30° 與 60°）射程相同。',
-          sc:'最大射程在 45°。互补角度（30° 与 60°）射程相同。' }) + '</div></div>';
+          sc:'最大射程在 45°。互补角度（30° 與 60°）射程相同。' }) + '</div></div>';
     return h;
   },
   bindSidebar(el) {

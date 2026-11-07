@@ -1,5 +1,5 @@
 import {
-  THREE, T, t, lang, root3d, camera, viewMode, marks, trail,
+  THREE, T, t, lang, root3d, camera, viewMode, marks, trail, scene, renderer,
   MAT, rbox, lathe, barBetween, makeCanvas, slottedMassMesh, createMassStack,
   addGraduation, createGraduatedCylinder, createPiston, createPSU, createMeter,
   createResistor, createPCB, createRetortStand, helixPoints, createHelicalSpring,
@@ -9,38 +9,39 @@ import {
   sliderHTML, bindSliders, chkHTML, bindChks, renderSidebar, renderHUD, updatePtCount,
   refreshPlayBtn, populateGraphSelect, drawGraph, setCamera3D, setViewMode,
 } from '../engine.js';
+import { loadHandbookGLB, mountHandbookRoot } from '../toonify.js';
 
 export default {
   id:'ohm',
   cat:'elec',
-  title:{ en:"Ohm's Law · V = IR", tc:'歐姆定律 · V = IR', sc:'欧姆定律 · V = IR' },
+  title:{ en:"Ohm's Law · V = IR", tc:'歐姆定律 · V = IR', sc:'歐姆定律 · V = IR' },
   desc:{ en:'Adjust supply voltage and load resistance. Measure V and I; the graph is a straight line through the origin.',
          tc:'調整電壓與負載電阻。量度 V 與 I；圖為過原點的直線。',
-         sc:'调整电压与负载电阻。量度 V 与 I；图为过原点的直线。' },
+         sc:'调整電壓與负載電阻。量度 V 與 I；圖為过原點的直線。' },
   hasPSU:true,
   cam3d:[5.0,3.9,7.4], camFront:{ pos:[0,2.2,9.2], tgt:[0,2.2,0] },
   vectorLegend:[
-    [{en:'Conventional current', tc:'慣例電流方向', sc:'惯例电流方向'}, '#ff5f56']
+    [{en:'Conventional current', tc:'慣例電流方向', sc:'惯例電流方向'}, '#ff5f56']
   ],
   equipment:[
-    {id:'bat', name:{en:'DC supply', tc:'直流電源', sc:'直流电源'}},
-    {id:'res', name:{en:'Resistor R', tc:'電阻器 R', sc:'电阻器 R'}},
-    {id:'amm', name:{en:'Ammeter', tc:'安培計', sc:'安培计'}},
-    {id:'vol', name:{en:'Voltmeter', tc:'伏特計', sc:'伏特计'}},
-    {id:'rheo', name:{en:'Rheostat', tc:'變阻器', sc:'变阻器'}},
-    {id:'wire', name:{en:'Connecting wires', tc:'連接線', sc:'连接线'}}
+    {id:'bat', name:{en:'DC supply', tc:'直流電源', sc:'直流電源'}},
+    {id:'res', name:{en:'Resistor R', tc:'電阻器 R', sc:'電阻器 R'}},
+    {id:'amm', name:{en:'Ammeter', tc:'安培計', sc:'安培計'}},
+    {id:'vol', name:{en:'Voltmeter', tc:'伏特計', sc:'伏特計'}},
+    {id:'rheo', name:{en:'Rheostat', tc:'變阻器', sc:'變阻器'}},
+    {id:'wire', name:{en:'Connecting wires', tc:'連接線', sc:'連接線'}}
   ],
   variables:[
-    {id:'R', name:{en:'Resistance R', tc:'電阻 R', sc:'电阻 R'}, min:5, max:100, step:1, def:20, unit:' Ω'},
-    {id:'V', name:{en:'Supply voltage', tc:'供應電壓', sc:'供应电压'}, min:0, max:20, step:0.1, def:6, unit:' V'}
+    {id:'R', name:{en:'Resistance R', tc:'電阻 R', sc:'電阻 R'}, min:5, max:100, step:1, def:20, unit:' Ω'},
+    {id:'V', name:{en:'Supply voltage', tc:'供應電壓', sc:'供應電壓'}, min:0, max:20, step:0.1, def:6, unit:' V'}
   ],
   graph:{
     activeType:0,
     types:[
-      { id:'vi', label:{en:'V vs I', tc:'V 對 I', sc:'V 对 I'},
+      { id:'vi', label:{en:'V vs I', tc:'V 對 I', sc:'V 對 I'},
         xLabel:'I (A)', yLabel:'V (V)', xMax:2.0, xFmt:2, yFmt:1, slopeUnit:'Ω',
         current(){ return { x:this.I(), y:this.V() }; } },
-      { id:'iv', label:{en:'I vs V', tc:'I 對 V', sc:'I 对 V'},
+      { id:'iv', label:{en:'I vs V', tc:'I 對 V', sc:'I 對 V'},
         xLabel:'V (V)', yLabel:'I (A)', xMax:20, xFmt:0, yFmt:3, slopeUnit:'A/V',
         current(){ return { x:this.V(), y:this.I() }; } }
     ],
@@ -52,10 +53,19 @@ export default {
   I(){ const R = this.vars.R || 1; return this.vars.V / R; },
   V(){ return this.vars.V; },
   _arrowCur:null,
-  _currentDots:null,
+  _currentDots:null, _glbScreens:[],
 
   init() {
     const g = root3d;
+    loadHandbookGLB('/models/ohm_apparatus.glb', {
+      outline: { targets: [{ name:'Circuit_Board' }, { name:'Wire_Loop' }, { name:'Battery' }, { name:'Resistor' }, { name:'Meter' }, { name:'Voltmeter' }]  },
+      onLoad: (root) => {
+        mountHandbookRoot(g, root, scene, renderer);
+        this._addDigitalScreens(root, g);
+        this.sync3D(0);
+      }
+    });
+
     /* circuit board */
     const pcb = createPCB(6, 4);
     pcb.group.position.y = -0.18;
@@ -172,6 +182,21 @@ export default {
     if (this._vmTex) this._vmTex.needsUpdate = true;
   },
 
+  _addDigitalScreens(root, g) {
+    const add = (nodeName, texture) => {
+      const node = root.getObjectByName(nodeName);
+      if (!node || !texture) return;
+      const p = new THREE.Vector3(); node.getWorldPosition(p);
+      const mat = new THREE.MeshBasicMaterial({ map: texture, transparent: true, toneMapped: false });
+      const screen = new THREE.Mesh(new THREE.PlaneGeometry(.78, .34), mat);
+      screen.position.copy(p); screen.position.y += .42; screen.position.z += .38;
+      screen.renderOrder = 4;
+      g.add(screen); this._glbScreens.push(screen);
+    };
+    add('Meter', this._amTex);
+    add('Voltmeter', this._vmTex);
+  },
+
   reset() {},
   update(dt) {
     this.t += dt;
@@ -183,6 +208,7 @@ export default {
     this._drawBat(); this._drawAm(); this._drawVm();
   },
   sync3D(dt) {
+    for (const s of this._glbScreens || []) s.lookAt(camera.position);
     /* update flow dot positions along curve */
     if (this._flowCurve) {
       const len = this._flowCurve.getLength();
@@ -213,7 +239,7 @@ export default {
     h += '<div class="card"><div class="card-head"><h3>' + t('hint') + '</h3></div><div class="hint-text">' +
       T({ en:'Record (V, I) pairs at different supply voltages. Switch to <b>V vs I</b> — the slope is R.',
           tc:'在不同電壓記錄 (V, I)，切到 <b>V 對 I</b> — 斜率即 R。',
-          sc:'在不同电压记录 (V, I)，切到 <b>V 对 I</b> — 斜率即 R。' }) +
+          sc:'在不同電壓記錄 (V, I)，切到 <b>V 對 I</b> — 斜率即 R。' }) +
       '</div></div>';
     return h;
   },

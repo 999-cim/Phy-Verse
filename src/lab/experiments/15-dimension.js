@@ -1,5 +1,5 @@
 import {
-  THREE, T, t, lang, root3d, camera, viewMode, marks, trail,
+  THREE, T, t, lang, root3d, camera, viewMode, marks, trail, scene, renderer,
   MAT, rbox, lathe, barBetween, makeCanvas, slottedMassMesh, createMassStack,
   addGraduation, createGraduatedCylinder, createPiston, createPSU, createMeter,
   createResistor, createPCB, createRetortStand, helixPoints, createHelicalSpring,
@@ -9,24 +9,25 @@ import {
   sliderHTML, bindSliders, chkHTML, bindChks, renderSidebar, renderHUD, updatePtCount,
   refreshPlayBtn, populateGraphSelect, drawGraph, setCamera3D, setViewMode,
 } from '../engine.js';
+import { loadHandbookGLB, mountHandbookRoot } from '../toonify.js';
 
 export default {
   id:'dimension',
   cat:'misc',
-  title:{ en:'Dimensional Analysis Checker', tc:'量綱分析檢查器', sc:'量纲分析检查器' },
+  title:{ en:'Dimensional Analysis Checker', tc:'量綱分析檢查器', sc:'量綱分析检查器' },
   desc:{ en:'Test whether a formula is dimensionally consistent. Both sides must have the same base units.',
          tc:'檢查公式是否量綱一致。兩邊必須有相同的基本單位。',
-         sc:'检查公式是否量纲一致。两边必须有相同的基本单位。' },
+         sc:'检查公式是否量綱一致。两边必须有相同的基本單位。' },
   hasPSU:false,
   cam3d:[0,3,7], camFront:{ pos:[0,2.5,9], tgt:[0,2.5,0] },
   vectorLegend:[],
   equipment:[
     {id:'lst', name:{en:'Formula list', tc:'公式表', sc:'公式表'}},
-    {id:'un', name:{en:'Unit table', tc:'單位表', sc:'单位表'}},
+    {id:'un', name:{en:'Unit table', tc:'單位表', sc:'單位表'}},
     {id:'pen', name:{en:'Pen', tc:'筆', sc:'笔'}},
-    {id:'calc', name:{en:'Calculator', tc:'計算機', sc:'计算机'}},
+    {id:'calc', name:{en:'Calculator', tc:'計算機', sc:'計算機'}},
     {id:'book', name:{en:'Textbook', tc:'教科書', sc:'教科书'}},
-    {id:'nb', name:{en:'Notebook', tc:'筆記本', sc:'笔记本'}}
+    {id:'nb', name:{en:'Notebook', tc:'筆記本', sc:'笔記本'}}
   ],
   variables:[
     {id:'idx', name:{en:'Formula index', tc:'公式編號', sc:'公式编号'}, min:0, max:6, step:1, def:0, unit:''}
@@ -46,44 +47,47 @@ export default {
   ],
   init() {
     const g = root3d;
-    addGround();
-    const plate = rbox(4.0, 2.5, 0.16, 0.04, new THREE.MeshPhysicalMaterial({
-      color: 0x14263a, metalness: 0.25, roughness: 0.45, clearcoat: 0.5
-    }), 3);
-    plate.position.set(0, 2, 0);
-    g.add(plate);
-    /* 鋁框與展示架 */
-    for (const sy of [-1.24, 1.24]) {
-      const bar = rbox(4.12, 0.05, 0.20, 0.02, MAT.aluminium(), 2);
-      bar.position.set(0, 2 + sy, 0); g.add(bar);
-    }
-    for (const sx of [-1.99, 1.99]) {
-      const bar = rbox(0.05, 2.56, 0.20, 0.02, MAT.aluminium(), 2);
-      bar.position.set(sx, 2, 0); g.add(bar);
-    }
-    for (const sx of [-1.35, 1.35]) {
-      const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.055, 1.28, 16), MAT.steel());
-      leg.position.set(sx, 0.28, -0.22); g.add(leg);
-      const foot = rbox(0.48, 0.06, 0.34, 0.02, MAT.dark(), 2);
-      foot.position.set(sx, -0.02, -0.22); g.add(foot);
-    }
-
-    /* 在板上顯示公式與量綱檢查結果（CanvasTexture） */
-    const cv = document.createElement('canvas');
-    cv.width = 1024; cv.height = 640;
-    this._plateCanvas = cv;
-    const tex = new THREE.CanvasTexture(cv);
-    tex.colorSpace = THREE.SRGBColorSpace;
-    tex.anisotropy = 4;
-    this._plateTex = tex;
-    const panel = new THREE.Mesh(
-      new THREE.PlaneGeometry(3.9, 2.4),
-      new THREE.MeshBasicMaterial({ map: tex })
+    const table = new THREE.Mesh(
+      new THREE.BoxGeometry(5.0, 0.2, 3.0),
+      new THREE.MeshStandardMaterial({ color: 0x3e2723, roughness: 0.8 })
     );
-    panel.position.set(0, 2, 0.081);
-    g.add(panel);
-    this._platePanel = panel;
-    this._drawPlate();
+    table.position.set(0, -0.1, 0);
+    table.receiveShadow = true; table.castShadow = true;
+    g.add(table);
+
+    const blackboard = new THREE.Mesh(
+      new THREE.BoxGeometry(4.0, 2.2, 0.05),
+      new THREE.MeshStandardMaterial({ color: 0x1b382b, roughness: 0.6 })
+    );
+    blackboard.position.set(0, 1.4, -1.8);
+    blackboard.castShadow = true; blackboard.receiveShadow = true;
+    g.add(blackboard);
+
+    const cubeMesh = new THREE.Mesh(
+      new THREE.BoxGeometry(0.6, 0.6, 0.6),
+      new THREE.MeshStandardMaterial({ color: 0x8ecae6, roughness: 0.45 })
+    );
+    cubeMesh.position.set(-0.8, 0.3, 0.2);
+    cubeMesh.castShadow = true; cubeMesh.receiveShadow = true; g.add(cubeMesh);
+
+    const caliper = new THREE.Group();
+    const metal = new THREE.MeshStandardMaterial({ color: 0xaebac4, metalness: 0.8, roughness: 0.25 });
+    const beam = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.06, 0.18), metal);
+    beam.position.y = 0.03; beam.castShadow = true; caliper.add(beam);
+    const jawL = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.28, 0.28), metal);
+    jawL.position.set(-0.75, 0.14, 0); caliper.add(jawL);
+    const jawR = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.28, 0.28), metal);
+    jawR.position.set(0.30, 0.14, 0); caliper.add(jawR);
+    caliper.position.set(0.6, 0.04, 0.4);
+    caliper.rotation.set(-Math.PI / 2, 0, 0);
+    g.add(caliper);
+
+    const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.28, 24, 16), new THREE.MeshStandardMaterial({ color: 0xd9b77b, roughness: 0.35 }));
+    sphere.position.set(1.65, 0.28, 0.2); sphere.castShadow = true; g.add(sphere);
+    const rock = new THREE.Mesh(new THREE.SphereGeometry(0.28, 6, 4), new THREE.MeshStandardMaterial({ color: 0x8d8a80, roughness: 0.7 }));
+    rock.position.set(2.25, 0.28, -0.1); rock.rotation.set(0.3, 0.4, 0.2); rock.castShadow = true; g.add(rock);
+
+    setCamera3D([0, 1.5, 4.4], [0, 0.7, -0.2]);
   },
   _drawPlate() {
     const cv = this._plateCanvas;
@@ -141,7 +145,7 @@ export default {
     h += '<div class="card"><div class="card-head"><h3>' + t('hint') + '</h3></div><div class="hint-text">' +
       T({ en:'Use the slider to browse formulas. Base units: m, s, kg, A, K, mol, cd.',
           tc:'用滑桿瀏覽公式。基本單位：m、s、kg、A、K、mol、cd。',
-          sc:'用滑杆浏览公式。基本单位：m、s、kg、A、K、mol、cd。' }) + '</div></div>';
+          sc:'用滑杆浏覽公式。基本單位：m、s、kg、A、K、mol、cd。' }) + '</div></div>';
     return h;
   },
   bindSidebar(el) {

@@ -14,32 +14,32 @@ import { loadHandbookGLB, applyPaperScene } from '../toonify.js';
 export default {
   id:'heatcap',
   cat:'heat',
-  title:{ en:'Specific Heat Capacity · Q = mcΔT', tc:'比熱容量 · Q = mcΔT', sc:'比热容量 · Q = mcΔT' },
+  title:{ en:'Specific Heat Capacity · Q = mcΔT', tc:'比熱容量 · Q = mcΔT', sc:'比熱容量 · Q = mcΔT' },
   desc:{ en:'Heat a metal block with a known electrical power. The slope of T vs t gives P/(mc).',
          tc:'用已知電功率加熱金屬塊。T 對 t 的斜率即 P/(mc)。',
-         sc:'用已知电功率加热金属块。T 对 t 的斜率即 P/(mc)。' },
+         sc:'用已知電功率加熱金属塊。T 對 t 的斜率即 P/(mc)。' },
   hasPSU:true,
   cam3d:[6,5,8], camFront:{ pos:[0,2,11], tgt:[0,2,0] },
   vectorLegend:[
-    [{en:'Electrical power → heat', tc:'電功率 → 熱', sc:'电功率 → 热'}, '#ff5f56'],
-    [{en:'Heat loss to surroundings', tc:'散熱損失', sc:'散热损失'}, '#4da3ff']
+    [{en:'Electrical power → heat', tc:'電功率 → 熱', sc:'電功率 → 熱'}, '#ff5f56'],
+    [{en:'Heat loss to surroundings', tc:'散熱損失', sc:'散熱损失'}, '#4da3ff']
   ],
   equipment:[
-    {id:'blk', name:{en:'Metal block', tc:'金屬塊', sc:'金属块'}},
-    {id:'heater', name:{en:'Immersion heater', tc:'加熱器', sc:'加热器'}},
-    {id:'psu', name:{en:'Power supply', tc:'電源', sc:'电源'}},
-    {id:'thermo', name:{en:'Thermometer', tc:'溫度計', sc:'温度计'}},
-    {id:'ins', name:{en:'Insulation jacket', tc:'保溫套', sc:'保温套'}},
-    {id:'timer', name:{en:'Timer', tc:'計時器', sc:'计时器'}}
+    {id:'blk', name:{en:'Metal block', tc:'金屬塊', sc:'金属塊'}},
+    {id:'heater', name:{en:'Immersion heater', tc:'加熱器', sc:'加熱器'}},
+    {id:'psu', name:{en:'Power supply', tc:'電源', sc:'電源'}},
+    {id:'thermo', name:{en:'Thermometer', tc:'溫度計', sc:'溫度計'}},
+    {id:'ins', name:{en:'Insulation jacket', tc:'保溫套', sc:'保溫套'}},
+    {id:'timer', name:{en:'Timer', tc:'計時器', sc:'計時器'}}
   ],
   variables:[
-    {id:'mass', name:{en:'Block mass', tc:'金屬塊質量', sc:'金属块质量'}, min:0.2, max:1.5, step:0.05, def:0.5, unit:' kg'},
-    {id:'c', name:{en:'Specific heat c', tc:'比熱容量 c', sc:'比热容 c'}, min:400, max:900, step:10, def:900, unit:' J/kg·K'}
+    {id:'mass', name:{en:'Block mass', tc:'金屬塊質量', sc:'金属塊質量'}, min:0.2, max:1.5, step:0.05, def:0.5, unit:' kg'},
+    {id:'c', name:{en:'Specific heat c', tc:'比熱容量 c', sc:'比熱容 c'}, min:400, max:900, step:10, def:900, unit:' J/kg·K'}
   ],
   graph:{
     activeType:0,
     types:[
-      { id:'Tt', label:{en:'T vs t', tc:'T 對 t', sc:'T 对 t'},
+      { id:'Tt', label:{en:'T vs t', tc:'T 對 t', sc:'T 對 t'},
         xLabel:'Time (s)', yLabel:'T (°C)', xMax:200, xFmt:0, yFmt:0, slopeUnit:'°C/s',
         current(){ return { x:this.t, y:this.vars.T - 273 }; } }
     ],
@@ -95,6 +95,7 @@ export default {
     const psu = createPSU({ w: 1.4, h: 1.0, d: 0.9, screenW: 1.1, screenH: 0.55 });
     psu.group.position.set(2.6, 0, -0.8);
     g.add(psu.group);
+    this._psuGroup = psu.group;
     this._psuCtx = psu.ctx; this._psuTex = psu.tex; this._psuScreen = psu.screen;
     g.add(createWire([[2.15, 0.45, -0.55], [1.2, 0.2, 0.2], [0.5, 1.3, 0]], 0xcc3333, 0.035));
     g.add(createWire([[3.0, 0.45, -0.55], [1.6, 0.2, -0.3], [-0.5, 1.3, 0]], 0x22282f, 0.035));
@@ -149,7 +150,7 @@ export default {
     this._block.material.color.setHSL(0.58 - heatFrac * 0.55, 0.45, 0.62);
   }
   /* block + jacket size scale with mass (reference: 0.5 kg) */
-  const sizeScale = Math.cbrt(this.vars.mass / 0.5);
+  const sizeScale = 1; /* keep the drilled holes, heater and probe coaxial */
   if (this._blockGroup) this._blockGroup.scale.set(sizeScale, sizeScale, sizeScale);
     /* heater glow */
     if (this._glow) {
@@ -186,7 +187,7 @@ if (this._glow)   this._glow.visible   = this.equip.heater !== false;
     h += '<div class="card"><div class="card-head"><h3>' + t('hint') + '</h3></div><div class="hint-text">' +
       T({ en:'Raise the <b>supply voltage</b> and watch T rise linearly. Slope of T vs t = P/(mc).',
           tc:'提高<b>電壓</b>，觀察 T 線性上升。T 對 t 斜率 = P/(mc)。',
-          sc:'提高<b>电压</b>，观察 T 线性上升。T 对 t 斜率 = P/(mc)。' }) +
+          sc:'提高<b>電壓</b>，观察 T 線性上升。T 對 t 斜率 = P/(mc)。' }) +
       '</div></div>';
     return h;
   },

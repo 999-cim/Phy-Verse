@@ -1,5 +1,5 @@
 import {
-  THREE, T, t, lang, root3d, camera, viewMode, marks, trail,
+  THREE, T, t, lang, root3d, camera, viewMode, marks, trail, scene, renderer,
   MAT, rbox, lathe, barBetween, makeCanvas, slottedMassMesh, createMassStack,
   addGraduation, createGraduatedCylinder, createPiston, createPSU, createMeter,
   createResistor, createPCB, createRetortStand, helixPoints, createHelicalSpring,
@@ -9,14 +9,15 @@ import {
   sliderHTML, bindSliders, chkHTML, bindChks, renderSidebar, renderHUD, updatePtCount,
   refreshPlayBtn, populateGraphSelect, drawGraph, setCamera3D, setViewMode,
 } from '../engine.js';
+import { loadHandbookGLB, mountHandbookRoot } from '../toonify.js';
 
 export default {
   id:'pendulum',
   cat:'mech',
-  title:{ en:'Simple Pendulum · T = 2π√(L/g)', tc:'單擺 · T = 2π√(L/g)', sc:'单摆 · T = 2π√(L/g)' },
+  title:{ en:'Simple Pendulum · T = 2π√(L/g)', tc:'單擺 · T = 2π√(L/g)', sc:'單擺 · T = 2π√(L/g)' },
   desc:{ en:'Swing a bob. Measure the period and see how it depends on length — not on mass.',
          tc:'擺動擺錘。量度週期，觀察與長度的關係 — 與質量無關。',
-         sc:'摆动摆锤。量度周期，观察与长度的关系 — 与质量无关。' },
+         sc:'擺動擺锤。量度周期，观察與長度的關系 — 與質量無關。' },
   hasPSU:false,
   cam3d:[0,4,9], camFront:{ pos:[0,3.5,11], tgt:[0,3.5,0] },
   vectorLegend:[
@@ -26,23 +27,23 @@ export default {
   ],
   equipment:[
     {id:'stand', name:{en:'Retort stand', tc:'支架', sc:'支架'}},
-    {id:'str', name:{en:'String', tc:'細線', sc:'细线'}},
-    {id:'bob', name:{en:'Bob (drag)', tc:'擺錘（拖曳）', sc:'摆锤（拖拽）'}},
+    {id:'str', name:{en:'String', tc:'細線', sc:'细線'}},
+    {id:'bob', name:{en:'Bob (drag)', tc:'擺錘（拖曳）', sc:'擺锤（拖拽）'}},
     {id:'prot', name:{en:'Protractor', tc:'量角器', sc:'量角器'}},
     {id:'ruler', name:{en:'Ruler', tc:'尺', sc:'尺'}},
     {id:'timer', name:{en:'Stopwatch', tc:'碼錶', sc:'秒表'}}
   ],
   variables:[
-    {id:'L', name:{en:'String length L', tc:'擺長 L', sc:'摆长 L'}, min:0.3, max:2.0, step:0.05, def:0.8, unit:' m'},
+    {id:'L', name:{en:'String length L', tc:'擺長 L', sc:'擺長 L'}, min:0.3, max:2.0, step:0.05, def:0.8, unit:' m'},
     {id:'g', name:{en:'Gravity g', tc:'重力 g', sc:'重力 g'}, min:1.6, max:20, step:0.1, def:9.81, unit:' m/s²'}
   ],
   graph:{
     activeType:0,
     types:[
-      { id:'tl', label:{en:'T vs L', tc:'T 對 L', sc:'T 对 L'},
+      { id:'tl', label:{en:'T vs L', tc:'T 對 L', sc:'T 對 L'},
         xLabel:'L (m)', yLabel:'T (s)', xMax:2.2, xFmt:1, yFmt:2, slopeUnit:'s/m',
         current(){ return { x:this.vars.L, y:this.period() }; } },
-      { id:'tl2', label:{en:'T² vs L', tc:'T² 對 L', sc:'T² 对 L'},
+      { id:'tl2', label:{en:'T² vs L', tc:'T² 對 L', sc:'T² 對 L'},
         xLabel:'L (m)', yLabel:'T² (s²)', xMax:2.2, xFmt:1, yFmt:2, slopeUnit:'s²/m',
         current(){ return { x:this.vars.L, y:this.period()**2 }; } }
     ],
@@ -60,6 +61,18 @@ export default {
 
   init() {
     const g = root3d;
+    loadHandbookGLB('/models/pendulum_apparatus.glb', {
+      outline: { targets: [{ name:'Pendulum_Stand' }, { name:'String' }, { name:'Pendulum_Bob' }]  },
+      onLoad: (root) => {
+        mountHandbookRoot(g, root, scene, renderer); this._bob = root.getObjectByName('Pendulum_Bob');
+        const oldString = root.getObjectByName('String'); if (oldString) oldString.visible = false;
+        this._rod = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: 0x3a3f45 })); g.add(this._rod);
+        const arc = new THREE.Mesh(new THREE.RingGeometry(.85, 1.05, 48, 1, Math.PI * 1.18, Math.PI * .64), new THREE.MeshBasicMaterial({ color: 0xfff8e8, side: THREE.DoubleSide, transparent: true, opacity: .85 }));
+        arc.position.set(1.2, 4.9, -0.14); g.add(arc);
+        this.sync3D(0);
+      }
+    });
+
     addGround();
 
     /* 鑄鐵底座 + 立柱 + 十字夾 + 橫臂 */
@@ -127,7 +140,7 @@ export default {
     const pts = [new THREE.Vector3(px, py, 0), new THREE.Vector3(bx, by, 0)];
     if (this._rod) {
       this._rod.geometry.dispose();
-      this._rod.geometry = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 8, 0.009, 6, false);
+      this._rod.geometry = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 8, 0.012, 6, false);
     }
     const show = viewMode === 'vector';
     this._arrowT.visible = this._arrowW.visible = show;
@@ -162,7 +175,7 @@ export default {
     h += '<div class="card"><div class="card-head"><h3>' + t('hint') + '</h3></div><div class="hint-text">' +
       T({ en:'<b>Drag the bob</b> sideways to set amplitude. T² vs L is a straight line through the origin.',
           tc:'<b>拖曳擺錘</b>設定振幅。T² 對 L 是過原點的直線。',
-          sc:'<b>拖拽摆锤</b>设置振幅。T² 对 L 是过原点的直线。' }) + '</div></div>';
+          sc:'<b>拖拽擺锤</b>設置振幅。T² 對 L 是过原點的直線。' }) + '</div></div>';
     return h;
   },
   bindSidebar(el) {
