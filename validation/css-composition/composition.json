@@ -1,0 +1,63 @@
+{
+  "bundle": "dist/assets/index-BNQIEW_j.css",
+  "actual_bytes": 65265,
+  "attributed_bytes": 65272,
+  "delta_bytes": 7,
+  "sections": [
+    {
+      "source": "phy-css -> src/styles/base.css",
+      "bytes": 18307,
+      "percent": 28.047
+    },
+    {
+      "source": "phyexp-css + phy-bridge-css -> src/styles/lab-theme.css",
+      "bytes": 15016,
+      "percent": 23.005
+    },
+    {
+      "source": "phy-ocr-css -> src/styles/ocr.css",
+      "bytes": 5513,
+      "percent": 8.446
+    },
+    {
+      "source": "phy-lab-css -> src/styles/lab.css",
+      "bytes": 11205,
+      "percent": 17.167
+    },
+    {
+      "source": "phy-lb-css -> src/styles/leaderboard.css",
+      "bytes": 2179,
+      "percent": 3.338
+    },
+    {
+      "source": "phy-fix-css + bridgeFix -> src/styles/fixes.css",
+      "bytes": 6559,
+      "percent": 10.049
+    },
+    {
+      "source": "custom subtotal",
+      "bytes": 58779,
+      "percent": 90.052
+    },
+    {
+      "source": "@tailwind base",
+      "bytes": 4731,
+      "percent": 7.248
+    },
+    {
+      "source": "@tailwind components",
+      "bytes": 0,
+      "percent": 0.0
+    },
+    {
+      "source": "@tailwind utilities",
+      "bytes": 1762,
+      "percent": 2.699
+    },
+    {
+      "source": "tailwind subtotal",
+      "bytes": 6493,
+      "percent": 9.948
+    }
+  ]
+}

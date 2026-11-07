@@ -1,0 +1,23 @@
+{
+  "mobile_390x844_dpr2_light": {
+    "01-launcher.png": 0,
+    "02-practice.png": 0,
+    "03-selector.png": 0,
+    "04-snell-lab.png": 0,
+    "05-launcher-return.png": 0
+  },
+  "desktop_1280x900_light": {
+    "01-launcher.png": 0,
+    "02-practice.png": 0,
+    "03-selector.png": 0,
+    "04-snell-lab.png": 0
+  },
+  "mobile_390x844_dpr2_dark": {
+    "01-launcher-dark.png": 0,
+    "02-practice-dark.png": 0,
+    "03-selector-dark.png": 0,
+    "04-latent-dark.png": 2686,
+    "dark-snell": 0
+  },
+  "note": "latent-dark diff is a 0.02 C HUD/thermometer animation difference, not a CSS/layout difference; dark snell static lab is 0 px."
+}

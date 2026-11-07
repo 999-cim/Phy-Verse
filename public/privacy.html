@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#4f46e5" />
+  <meta name="description" content="PhyVerse 隱私政策：Google 登入資料用途、練習記錄同步與資料分享說明。" />
+  <title>隱私政策 — PhyVerse</title>
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-deep: #4338ca;
+      --violet: #7c3aed;
+      --text: #0f172a;
+      --muted: #64748b;
+      --soft: #f8fafc;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --shadow: 0 18px 50px rgba(15, 23, 42, .08);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 8% 0%, rgba(99, 102, 241, .12), transparent 28rem),
+        radial-gradient(circle at 100% 18%, rgba(124, 58, 237, .10), transparent 26rem),
+        var(--soft);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      line-height: 1.75;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--primary); text-underline-offset: 3px; }
+    a:hover { color: var(--primary-deep); }
+    .site-header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--violet) 100%);
+      color: #fff;
+      box-shadow: 0 8px 30px rgba(79, 70, 229, .22);
+    }
+    .header-inner {
+      width: min(780px, calc(100% - 32px));
+      min-height: 64px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 800;
+      letter-spacing: -.01em;
+    }
+    .brand:hover { color: #fff; }
+    .brand-mark {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: rgba(255, 255, 255, .18);
+      backdrop-filter: blur(8px);
+      flex: 0 0 auto;
+    }
+    .brand-mark svg { width: 22px; height: 22px; }
+    .brand-name { font-size: 17px; }
+    .back-link {
+      color: rgba(255, 255, 255, .88);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 7px 11px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .12);
+      white-space: nowrap;
+    }
+    .back-link:hover { color: #fff; background: rgba(255, 255, 255, .2); }
+    main {
+      width: min(780px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 42px 0 36px;
+    }
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--primary);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .16em;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(30px, 6vw, 42px);
+      line-height: 1.2;
+      letter-spacing: -.035em;
+    }
+    .updated {
+      margin: 10px 0 26px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .policy-card {
+      background: var(--card);
+      border: 1px solid rgba(226, 232, 240, .9);
+      border-radius: 20px;
+      padding: clamp(22px, 4vw, 36px);
+      box-shadow: var(--shadow);
+    }
+    .lead {
+      margin: 0 0 26px;
+      color: #334155;
+      font-size: 15px;
+    }
+    section + section { margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--border); }
+    h2 {
+      margin: 0 0 10px;
+      font-size: 18px;
+      letter-spacing: -.01em;
+    }
+    p { margin: 0 0 10px; }
+    p:last-child { margin-bottom: 0; }
+    ul { margin: 8px 0 0; padding-left: 1.25rem; }
+    li { margin: 6px 0; }
+    .pill {
+      display: inline-block;
+      margin: 0 6px 6px 0;
+      padding: 2px 9px;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #4338ca;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .notice {
+      margin-top: 26px;
+      padding: 14px 16px;
+      border: 1px solid #c7d2fe;
+      border-radius: 12px;
+      background: #eef2ff;
+      color: #3730a3;
+      font-size: 13px;
+    }
+    .notice strong { color: #312e81; }
+    .site-footer {
+      width: min(780px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 0 0 36px;
+      color: var(--muted);
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .site-footer a { color: var(--muted); }
+    .site-footer a:hover { color: var(--primary); }
+    @media (max-width: 520px) {
+      .header-inner { min-height: 58px; }
+      .brand-name { font-size: 16px; }
+      .back-link { font-size: 12px; }
+      main { padding-top: 30px; }
+      .serial { display: block; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="/" aria-label="PhyVerse 主頁">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(45 12 12)"/>
+            <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(-45 12 12)"/>
+          </svg>
+        </span>
+        <span class="brand-name">PhyVerse</span>
+      </a>
+      <a class="back-link" href="/">← 返回主頁</a>
+    </div>
+  </header>
+
+  <main>
+    <p class="eyebrow">PRIVACY</p>
+    <h1>隱私政策</h1>
+    <p class="updated">最後更新：2026 年 11 月 4 日</p>
+
+    <article class="policy-card">
+      <p class="lead">
+        PhyVerse 是一個免費的 HKDSE 物理學習工具。你可以完全不登入使用；只有在你選擇「用 Google 登入」時，我們才會處理下列帳戶資料。
+      </p>
+
+      <section aria-labelledby="collect">
+        <h2 id="collect">1. 我們收集哪些資料</h2>
+        <p>當你使用 Google 登入時，我們只會取得 Google 帳戶的基本資料：</p>
+        <ul>
+          <li><strong>電郵地址</strong>：用於識別你的帳戶及顯示登入身份。</li>
+          <li><strong>頭像</strong>：用於登入後的帳戶顯示。</li>
+          <li><strong>顯示名稱</strong>（如 Google 提供）：僅用於帳戶顯示。</li>
+        </ul>
+        <p>我們<strong>不會</strong>取得你的 Google 密碼，也不會要求你輸入密碼。</p>
+        <p>為了提供跨裝置同步，我們亦會處理你自願產生的學習資料：</p>
+        <ul>
+          <li>練習記錄：課題、分數、題數、用時及時間戳。</li>
+          <li>實驗分數：實驗名稱、分數及時間戳。</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="use">
+        <h2 id="use">2. 資料的用途</h2>
+        <p>上述資料只用於：</p>
+        <ul>
+          <li><strong>用戶登入與身份驗證</strong>：完成 Google OAuth 登入及維持登入狀態。</li>
+          <li><strong>跨裝置同步</strong>：把你的練習記錄和實驗分數同步到你的帳戶，讓你在其他裝置登入後接續使用。</li>
+        </ul>
+        <p>我們不會建立廣告個人檔案，也不會用你的學習資料進行推銷或行為追蹤。</p>
+        <span class="pill">登入</span>
+        <span class="pill">跨裝置同步</span>
+      </section>
+
+      <section aria-labelledby="sharing">
+        <h2 id="sharing">3. 廣告與第三方分享</h2>
+        <p>
+          PhyVerse <strong>不會</strong>把你的個人資料用於廣告，亦<strong>不會</strong>出售、出租或分享給廣告商、資料經紀或其他第三方作市場推廣用途。
+        </p>
+        <p>
+          為了營運本服務，登入流程由 Google OAuth 提供，網站及帳戶資料由 Netlify 託管。這些服務供應商只會在提供登入及網站託管所需範圍內處理資料，並受其各自的隱私政策約束。
+        </p>
+      </section>
+
+      <section aria-labelledby="storage">
+        <h2 id="storage">4. 資料存放與刪除</h2>
+        <p>
+          未登入時，練習記錄和實驗分數只存放在你目前瀏覽器的 localStorage，不會上傳。登入後，這些資料會同步到你 Netlify Identity 帳戶的私人使用者資料欄位；登出不會自動刪除本機資料。
+        </p>
+        <p>
+          如你希望查詢或刪除帳戶及雲端資料，可透過專案的
+          <a href="https://github.com/999-cim/Phy-Verse/issues" target="_blank" rel="noopener noreferrer">GitHub Issues</a>
+          聯絡我們。
+        </p>
+      </section>
+
+      <section aria-labelledby="contact">
+        <h2 id="contact">5. 聯絡</h2>
+        <p>
+          如對本政策有任何疑問，請在
+          <a href="https://github.com/999-cim/Phy-Verse/issues" target="_blank" rel="noopener noreferrer">PhyVerse GitHub 專案</a>
+          提出 Issue。
+        </p>
+      </section>
+
+      <p class="notice">
+        <strong>簡短版：</strong>只用 Google 基本資料登入；只用來同步你的練習記錄和實驗分數；不用於廣告，也不賣給第三方。
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <span>PhyVerse v3.0 · HKDSE Physics Learning</span>
+    <span><a href="/">返回主頁</a> · <a href="/privacy.html">隱私政策</a></span>
+  </footer>
+</body>
+</html>

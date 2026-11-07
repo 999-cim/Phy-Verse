@@ -1,0 +1,256 @@
+.phylab-toolbar {
+      position: fixed; top: 16px; right: 16px;
+      display: flex; gap: 8px; z-index: 950;
+      pointer-events: auto;
+    }
+    .phylab-toolbar.hidden { display: none !important; }
+    .phylab-toolbar.result-open { display: none !important; }
+    .phylab-toolbar button {
+      display: flex; align-items: center; gap: 6px;
+      background: rgba(30, 27, 75, 0.75);
+      backdrop-filter: blur(12px);
+      color: #fff; border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 8px 12px; border-radius: 10px;
+      font-size: 12px; font-weight: 700;
+      cursor: pointer; font-family: inherit;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .phylab-toolbar button:hover {
+      background: rgba(79, 70, 229, 0.9);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4);
+    }
+    .phylab-toolbar button svg { width: 14px; height: 14px; }
+    .phylab-toolbar.light-mode button {
+      background: rgba(255, 255, 255, 0.92);
+      color: #1e293b;
+      border-color: #cbd5e1;
+    }
+    .phylab-toolbar.light-mode button:hover {
+      background: #4f46e5; color: #fff; border-color: #4f46e5;
+    }
+
+    /* Part 9 v6 — Collapsible toolbar in Lab screen */
+    .phylab-toolbar-toggle {
+      display: none;
+    }
+    .phylab-toolbar.lab-mode {
+      /* 避開 3D 視窗右上角的「3D / 正視圖 / 向量」切換按鈕 */
+      top: 112px;
+      right: 16px;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+    }
+    .phylab-toolbar.lab-mode .phylab-toolbar-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(30, 27, 75, 0.85);
+      backdrop-filter: blur(12px);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+      padding: 0;
+    }
+    .phylab-toolbar.lab-mode .phylab-toolbar-toggle:hover {
+      background: rgba(79, 70, 229, 0.9);
+      transform: scale(1.05);
+    }
+    .phylab-toolbar.lab-mode .phylab-toolbar-toggle svg {
+      width: 18px;
+      height: 18px;
+      transition: transform 0.25s ease;
+    }
+    .phylab-toolbar.lab-mode.expanded .phylab-toolbar-toggle svg {
+      transform: rotate(90deg);
+    }
+    .phylab-toolbar.lab-mode.light-mode .phylab-toolbar-toggle {
+      background: rgba(255, 255, 255, 0.92);
+      color: #1e293b;
+      border-color: #cbd5e1;
+    }
+    .phylab-toolbar.lab-mode.light-mode .phylab-toolbar-toggle:hover {
+      background: #4f46e5;
+      color: #fff;
+      border-color: #4f46e5;
+    }
+    .phylab-toolbar.lab-mode #phylabToolbarLang,
+    .phylab-toolbar.lab-mode #phylabToolbarTheme,
+    .phylab-toolbar.lab-mode #phylabToolbarRank {
+      display: none;
+    }
+    .phylab-toolbar.lab-mode.expanded #phylabToolbarLang,
+    .phylab-toolbar.lab-mode.expanded #phylabToolbarTheme,
+    .phylab-toolbar.lab-mode.expanded #phylabToolbarRank {
+      display: flex;
+      animation: p9SlideIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    @keyframes p9SlideIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @media (max-width: 700px) {
+      /* 手機版：齒輪移到圖表上方，展開時向上生長，避免蓋住 3D 視角切換 */
+      .phylab-toolbar.lab-mode {
+        top: auto;
+        bottom: 178px;
+        right: 8px;
+        flex-direction: column-reverse;
+      }
+    }
+    @media (max-width: 480px) {
+      .phylab-toolbar.lab-mode .phylab-toolbar-toggle {
+        width: 32px;
+        height: 32px;
+      }
+      .phylab-toolbar.lab-mode.expanded button {
+        padding: 6px 10px;
+        font-size: 11px;
+      }
+    }
+
+    /* Leaderboard Modal */
+    .p9-lb-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 970;
+      display: none; align-items: center; justify-content: center;
+      padding: 20px;
+      animation: p9FadeIn 0.25s ease-out;
+    }
+    .p9-lb-backdrop.show { display: flex; }
+    @keyframes p9FadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .p9-lb-modal {
+      background: #ffffff; color: #1e293b;
+      border-radius: 24px;
+      width: 100%; max-width: 520px;
+      max-height: 90vh; overflow-y: auto;
+      padding: 24px;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+      animation: p9ModalIn 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid #e2e8f0;
+    }
+    [data-theme="dark"] .p9-lb-modal {
+      background: #1e293b; color: #e2e8f0; border-color: #334155;
+    }
+    @keyframes p9ModalIn {
+      from { opacity: 0; transform: translateY(20px) scale(0.96); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .p9-lb-head {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-bottom: 16px;
+    }
+    .p9-lb-title {
+      font-size: 20px; font-weight: 800;
+      letter-spacing: -0.02em;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .p9-lb-close {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: #f1f5f9; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: #475569; transition: all 0.15s;
+    }
+    [data-theme="dark"] .p9-lb-close { background: #334155; color: #e2e8f0; }
+    .p9-lb-close:hover { background: #fee2e2; color: #ef4444; }
+    .p9-lb-close svg { width: 16px; height: 16px; }
+
+    .p9-lb-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+    .p9-lb-tab {
+      flex: 1; padding: 10px 8px;
+      border: 2px solid #e2e8f0; background: #fff; color: #1e293b;
+      border-radius: 10px; font-size: 13px; font-weight: 600;
+      cursor: pointer; font-family: inherit; transition: all 0.15s;
+    }
+    [data-theme="dark"] .p9-lb-tab {
+      background: #1e293b; color: #e2e8f0; border-color: #334155;
+    }
+    .p9-lb-tab:hover { border-color: #c7d2fe; }
+    .p9-lb-tab.active {
+      border-color: #4f46e5; background: #eef2ff; color: #4f46e5;
+      font-weight: 700; box-shadow: 0 0 0 3px #e0e7ff;
+    }
+    [data-theme="dark"] .p9-lb-tab.active {
+      background: #312e81; color: #c7d2fe; box-shadow: 0 0 0 3px #1e1b4b;
+    }
+
+    .p9-lb-content { min-height: 120px; }
+    .p9-lb-card {
+      background: #f8fafc; border-radius: 14px;
+      padding: 12px 16px; margin-bottom: 10px;
+      border: 1px solid #e2e8f0;
+    }
+    [data-theme="dark"] .p9-lb-card { background: #0f172a; border-color: #334155; }
+    .p9-lb-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 0; border-bottom: 1px solid #e2e8f0;
+    }
+    [data-theme="dark"] .p9-lb-row { border-color: #334155; }
+    .p9-lb-row:last-child { border-bottom: none; }
+    .p9-lb-rank {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 13px; flex-shrink: 0;
+      background: #f1f5f9; color: #475569;
+    }
+    [data-theme="dark"] .p9-lb-rank { background: #334155; color: #cbd5e1; }
+    .p9-lb-rank.rank-1 {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #fff;
+      box-shadow: 0 2px 8px rgba(251, 191, 36, 0.4);
+    }
+    .p9-lb-rank.rank-2 { background: linear-gradient(135deg, #cbd5e1, #94a3b8); color: #fff; }
+    .p9-lb-rank.rank-3 { background: linear-gradient(135deg, #fb923c, #c2410c); color: #fff; }
+    .p9-lb-info { flex: 1; min-width: 0; }
+    .p9-lb-topic {
+      font-size: 13px; font-weight: 700;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .p9-lb-when { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+    .p9-lb-score {
+      font-size: 18px; font-weight: 800; color: #4f46e5;
+      font-variant-numeric: tabular-nums; flex-shrink: 0;
+    }
+    [data-theme="dark"] .p9-lb-score { color: #a5b4fc; }
+    .p9-lb-score-max { font-size: 11px; color: #94a3b8; font-weight: 600; }
+    .p9-lb-empty { padding: 40px 16px; text-align: center; color: #94a3b8; font-size: 13px; }
+    .p9-lb-stats {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 10px; margin-bottom: 12px;
+    }
+    .p9-lb-stat {
+      background: #f8fafc; border-radius: 12px;
+      padding: 14px; text-align: center;
+      border: 1px solid #e2e8f0;
+    }
+    [data-theme="dark"] .p9-lb-stat { background: #0f172a; border-color: #334155; }
+    .p9-lb-stat-num {
+      font-size: 22px; font-weight: 800; color: #4f46e5;
+      font-variant-numeric: tabular-nums;
+    }
+    [data-theme="dark"] .p9-lb-stat-num { color: #a5b4fc; }
+    .p9-lb-stat-lbl {
+      font-size: 10px; color: #94a3b8;
+      margin-top: 4px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.04em;
+    }
+
+/* lab stage bridge fix (was runtime-injected) */
+#phylab-stage-mount > .phyexp-root {
+        height: calc(100vh - 54px) !important;
+        min-height: 0 !important;
+      }
+      @media (max-width: 900px) and (min-width: 701px) {
+        .phyexp-root #sidebar { flex: 0 0 230px; width: 230px; }
+        .phyexp-root #graph-panel { flex: 0 0 190px; height: 190px; }
+      }

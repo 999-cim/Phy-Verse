@@ -1,0 +1,519 @@
+[
+  {
+    "exp": "boyle",
+    "diffs": {},
+    "orig": {
+      "title": "波以耳定律 · P₁V₁ = P₂V₂",
+      "hud": [
+        "P 199.5 kPa",
+        "V 1.000 L",
+        "T 300 K",
+        "n 0.080 mol",
+        "P·V 199.5 J"
+      ],
+      "equipment": [],
+      "variables": [
+        "溫度 🔒 300 K",
+        "莫耳數 🔒 0.08 mol"
+      ],
+      "graphOptions": [
+        "P 對 V",
+        "P 對 1/V",
+        "P·V 對 V"
+      ],
+      "graphInfo": "",
+      "pts": "資料點: 0",
+      "buttons": [
+        "返回",
+        "重置",
+        "提交評分",
+        "⏸ 暫停",
+        "● 記錄",
+        "清除"
+      ],
+      "canvas": [
+        780,
+        880
+      ],
+      "rawKeys": [
+        "id",
+        "cat",
+        "title",
+        "desc",
+        "hasPSU",
+        "cam3d",
+        "camFront",
+        "vectorLegend",
+        "equipment",
+        "variables",
+        "graph",
+        "playing"
+      ]
+    },
+    "new": {
+      "title": "波以耳定律 · P₁V₁ = P₂V₂",
+      "hud": [
+        "P 199.5 kPa",
+        "V 1.000 L",
+        "T 300 K",
+        "n 0.080 mol",
+        "P·V 199.5 J"
+      ],
+      "equipment": [],
+      "variables": [
+        "溫度 🔒 300 K",
+        "莫耳數 🔒 0.08 mol"
+      ],
+      "graphOptions": [
+        "P 對 V",
+        "P 對 1/V",
+        "P·V 對 V"
+      ],
+      "graphInfo": "",
+      "pts": "資料點: 0",
+      "buttons": [
+        "返回",
+        "重置",
+        "提交評分",
+        "⏸ 暫停",
+        "● 記錄",
+        "清除"
+      ],
+      "canvas": [
+        780,
+        880
+      ],
+      "rawKeys": [
+        "id",
+        "cat",
+        "title",
+        "desc",
+        "hasPSU",
+        "cam3d",
+        "camFront",
+        "vectorLegend",
+        "equipment",
+        "variables",
+        "graph",
+        "playing"
+      ]
+    }
+  },
+  {
+    "exp": "charles",
+    "diffs": {
+      "hud": {
+        "orig": [
+          "V 1.308 L",
+          "T 315 K",
+          "n 0.050 mol",
+          "P 100 kPa",
+          "V/T 4.157 mL/K",
+          "供應 12.0 V"
+        ],
+        "new": [
+          "V 1.300 L",
+          "T 313 K",
+          "n 0.050 mol",
+          "P 100 kPa",
+          "V/T 4.157 mL/K",
+          "供應 12.0 V"
+        ]
+      }
+    },
+    "orig": {
+      "title": "查理定律 · V ∝ T",
+      "hud": [
+        "V 1.308 L",
+        "T 315 K",
+        "n 0.050 mol",
+        "P 100 kPa",
+        "V/T 4.157 mL/K",
+        "供應 12.0 V"
+      ],
+      "equipment": [],
+      "variables": [
+        "莫耳數 🔒 0.05 mol",
+        "外加壓力 🔒 100 kPa",
+        "供應電壓 12 V"
+      ],
+      "graphOptions": [
+        "V 對 T",
+        "V 對 T (°C)"
+      ],
+      "graphInfo": "",
+      "pts": "資料點: 0",
+      "buttons": [
+        "返回",
+        "重置",
+        "提交評分",
+        "⏸ 暫停",
+        "● 記錄",
+        "清除"
+      ],
+      "canvas": [
+        780,
+        880
+      ],
+      "rawKeys": [
+        "id",
+        "cat",
+        "title",
+        "desc",
+        "hasPSU",
+        "cam3d",
+        "camFront",
+        "vectorLegend",
+        "equipment",
+        "variables",
+        "graph",
+        "playing"
+      ]
+    },
+    "new": {
+      "title": "查理定律 · V ∝ T",
+      "hud": [
+        "V 1.300 L",
+        "T 313 K",
+        "n 0.050 mol",
+        "P 100 kPa",
+        "V/T 4.157 mL/K",
+        "供應 12.0 V"
+      ],
+      "equipment": [],
+      "variables": [
+        "莫耳數 🔒 0.05 mol",
+        "外加壓力 🔒 100 kPa",
+        "供應電壓 12 V"
+      ],
+      "graphOptions": [
+        "V 對 T",
+        "V 對 T (°C)"
+      ],
+      "graphInfo": "",
+      "pts": "資料點: 0",
+      "buttons": [
+        "返回",
+        "重置",
+        "提交評分",
+        "⏸ 暫停",
+        "● 記錄",
+        "清除"
+      ],
+      "canvas": [
+        780,
+        880
+      ],
+      "rawKeys": [
+        "id",
+        "cat",
+        "title",
+        "desc",
+        "hasPSU",
+        "cam3d",
+        "camFront",
+        "vectorLegend",
+        "equipment",
+        "variables",
+        "graph",
+        "playing"
+      ]
+    }
+  },
+  {
+    "exp": "heatcap",
+    "diffs": {},
+    "orig": {
+      "title": "比熱容量 · Q = mcΔT",
+      "hud": [
+        "T 293.0 K (20.0 °C)",
+        "t 0.0 s",
+        "c 900 J/kg·K",
+        "m 0.50 kg",
+        "P 5.0 W",
+        "dT/dt 0.011 K/s"
+      ],
+      "equipment": [],
+      "variables": [
+        "金屬塊質量 0.5 kg",
+        "比熱容量 c 900 J/kg·K",
+        "供應電壓 10 V"
+      ],
+      "graphOptions": [
+        "T 對 t"
+      ],
+      "graphInfo": "",
+      "pts": "資料點: 0",
+      "buttons": [
+        "返回",
+        "重置",
+        "提交評分",
+        "⏸ 暫停",
+        "● 記錄",
+        "清除"
+      ],
+      "canvas": [
+        780,
+        880
+      ],
+      "rawKeys": [
+        "id",
+        "cat",
+        "title",
+        "desc",
+        "hasPSU",
+        "cam3d",
+        "camFront",
+        "vectorLegend",
+        "equipment",
+        "variables",
+        "graph",
+        "playing"
+      ]
+    },
+    "new": {
+      "title": "比熱容量 · Q = mcΔT",
+      "hud": [
+        "T 293.0 K (20.0 °C)",
+        "t 0.0 s",
+        "c 900 J/kg·K",
+        "m 0.50 kg",
+        "P 5.0 W",
+        "dT/dt 0.011 K/s"
+      ],
+      "equipment": [],
+      "variables": [
+        "金屬塊質量 0.5 kg",
+        "比熱容量 c 900 J/kg·K",
+        "供應電壓 10 V"
+      ],
+      "graphOptions": [
+        "T 對 t"
+      ],
+      "graphInfo": "",
+      "pts": "資料點: 0",
+      "buttons": [
+        "返回",
+        "重置",
+        "提交評分",
+        "⏸ 暫停",
+        "● 記錄",
+        "清除"
+      ],
+      "canvas": [
+        780,
+        880
+      ],
+      "rawKeys": [
+        "id",
+        "cat",
+        "title",
+        "desc",
+        "hasPSU",
+        "cam3d",
+        "camFront",
+        "vectorLegend",
+        "equipment",
+        "variables",
+        "graph",
+        "playing"
+      ]
+    }
+  },
+  {
+    "exp": "latent",
+    "diffs": {},
+    "orig": {
+      "title": "冰的熔化潛熱 · L_f",
+      "hud": [
+        "T -20.00 °C",
+        "狀態 固態",
+        "已熔化 0.0 %",
+        "t 0.0 s",
+        "P 11.3 W",
+        "L_f 估算 —"
+      ],
+      "equipment": [],
+      "variables": [
+        "冰的質量 0.1 kg",
+        "供應電壓 15 V"
+      ],
+      "graphOptions": [
+        "T 對 t"
+      ],
+      "graphInfo": "",
+      "pts": "資料點: 0",
+      "buttons": [
+        "返回",
+        "重置",
+        "提交評分",
+        "⏸ 暫停",
+        "● 記錄",
+        "清除"
+      ],
+      "canvas": [
+        780,
+        880
+      ],
+      "rawKeys": [
+        "id",
+        "cat",
+        "title",
+        "desc",
+        "hasPSU",
+        "cam3d",
+        "camFront",
+        "vectorLegend",
+        "equipment",
+        "variables",
+        "graph",
+        "playing"
+      ]
+    },
+    "new": {
+      "title": "冰的熔化潛熱 · L_f",
+      "hud": [
+        "T -20.00 °C",
+        "狀態 固態",
+        "已熔化 0.0 %",
+        "t 0.0 s",
+        "P 11.3 W",
+        "L_f 估算 —"
+      ],
+      "equipment": [],
+      "variables": [
+        "冰的質量 0.1 kg",
+        "供應電壓 15 V"
+      ],
+      "graphOptions": [
+        "T 對 t"
+      ],
+      "graphInfo": "",
+      "pts": "資料點: 0",
+      "buttons": [
+        "返回",
+        "重置",
+        "提交評分",
+        "⏸ 暫停",
+        "● 記錄",
+        "清除"
+      ],
+      "canvas": [
+        780,
+        880
+      ],
+      "rawKeys": [
+        "id",
+        "cat",
+        "title",
+        "desc",
+        "hasPSU",
+        "cam3d",
+        "camFront",
+        "vectorLegend",
+        "equipment",
+        "variables",
+        "graph",
+        "playing"
+      ]
+    }
+  },
+  {
+    "exp": "hooke",
+    "diffs": {},
+    "orig": {
+      "title": "虎克定律 · F = kx",
+      "hud": [
+        "x 0.00 cm",
+        "F 1.96 N",
+        "k 30 N/m",
+        "m 0.20 kg",
+        "F/x —"
+      ],
+      "equipment": [],
+      "variables": [
+        "彈簧常數 k 30 N/m",
+        "懸掛質量 m 0.2 kg"
+      ],
+      "graphOptions": [
+        "x 對 m",
+        "x 對 F"
+      ],
+      "graphInfo": "",
+      "pts": "資料點: 0",
+      "buttons": [
+        "返回",
+        "重置",
+        "提交評分",
+        "⏸ 暫停",
+        "● 記錄",
+        "清除"
+      ],
+      "canvas": [
+        780,
+        880
+      ],
+      "rawKeys": [
+        "id",
+        "cat",
+        "title",
+        "desc",
+        "hasPSU",
+        "cam3d",
+        "camFront",
+        "vectorLegend",
+        "equipment",
+        "variables",
+        "graph",
+        "playing"
+      ]
+    },
+    "new": {
+      "title": "虎克定律 · F = kx",
+      "hud": [
+        "x 0.00 cm",
+        "F 1.96 N",
+        "k 30 N/m",
+        "m 0.20 kg",
+        "F/x —"
+      ],
+      "equipment": [],
+      "variables": [
+        "彈簧常數 k 30 N/m",
+        "懸掛質量 m 0.2 kg"
+      ],
+      "graphOptions": [
+        "x 對 m",
+        "x 對 F"
+      ],
+      "graphInfo": "",
+      "pts": "資料點: 0",
+      "buttons": [
+        "返回",
+        "重置",
+        "提交評分",
+        "⏸ 暫停",
+        "● 記錄",
+        "清除"
+      ],
+      "canvas": [
+        780,
+        880
+      ],
+      "rawKeys": [
+        "id",
+        "cat",
+        "title",
+        "desc",
+        "hasPSU",
+        "cam3d",
+        "camFront",
+        "vectorLegend",
+        "equipment",
+        "variables",
+        "graph",
+        "playing"
+      ]
+    }
+  }
+]

@@ -1,0 +1,9 @@
+{
+  "site_id": "9b3e9288-ccb8-470b-ad5d-3beec98a0e7b",
+  "site_name": "phy-verse",
+  "deploy_id": "6ae370d13348441aa8429f63",
+  "deploy_url": "https://6ae370d13348441aa8429f63--phy-verse.netlify.app",
+  "logs": "https://app.netlify.com/projects/phy-verse/deploys/6ae370d13348441aa8429f63",
+  "function_logs": "https://app.netlify.com/projects/phy-verse/logs/functions?scope=deploy:6ae370d13348441aa8429f63",
+  "edge_function_logs": "https://app.netlify.com/projects/phy-verse/logs/edge-functions?scope=deployid:6ae370d13348441aa8429f63"
+}

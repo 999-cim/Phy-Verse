@@ -1,0 +1,333 @@
+/* ===== Scan button ===== */
+    .phy-scan-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 8px;
+      margin-bottom: 4px;
+    }
+    .phy-scan-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      color: #78350f;
+      border: 1.5px dashed #f59e0b;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      width: 100%;
+      justify-content: center;
+    }
+    .phy-scan-btn:hover {
+      background: linear-gradient(135deg, #fde68a 0%, #fcd34d 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    }
+    .phy-scan-btn:active {
+      transform: translateY(0) scale(0.99);
+    }
+    .phy-scan-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+    .phy-scan-btn.loading {
+      pointer-events: none;
+      opacity: 0.7;
+    }
+    [data-theme="dark"] .phy-scan-btn {
+      background: linear-gradient(135deg, #78350f 0%, #92400e 100%);
+      color: #fef3c7;
+      border-color: #d97706;
+    }
+    [data-theme="dark"] .phy-scan-btn:hover {
+      background: linear-gradient(135deg, #92400e 0%, #b45309 100%);
+    }
+
+    /* ===== Modal ===== */
+    .phy-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(6px);
+      z-index: 500;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      animation: phyFadeIn 0.2s ease-out;
+    }
+    .phy-modal-backdrop.show {
+      display: flex;
+    }
+    @keyframes phyFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .phy-modal {
+      background: var(--card, #fff);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 520px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+      animation: phyModalIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid var(--border, #e2e8f0);
+    }
+    @keyframes phyModalIn {
+      from { opacity: 0; transform: translateY(20px) scale(0.97); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .phy-modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .phy-modal-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text, #1e293b);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .phy-modal-title-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+    }
+    .phy-modal-title-icon svg {
+      width: 20px;
+      height: 20px;
+    }
+    .phy-modal-close {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--border-light, #f1f5f9);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary, #475569);
+      transition: all 0.15s;
+    }
+    .phy-modal-close:hover {
+      background: var(--danger-light, #fee2e2);
+      color: var(--danger, #ef4444);
+    }
+    .phy-modal-close svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Preview image */
+    .phy-ocr-preview {
+      width: 100%;
+      max-height: 220px;
+      object-fit: contain;
+      background: #f1f5f9;
+      border-radius: 12px;
+      margin-bottom: 14px;
+      border: 1px solid var(--border, #e2e8f0);
+    }
+    [data-theme="dark"] .phy-ocr-preview {
+      background: #0f172a;
+    }
+
+    /* Progress */
+    .phy-progress-wrap {
+      margin-bottom: 14px;
+    }
+    .phy-progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary, #475569);
+      margin-bottom: 6px;
+    }
+    .phy-progress-bar {
+      height: 8px;
+      background: var(--border, #e2e8f0);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .phy-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%);
+      border-radius: 4px;
+      transition: width 0.3s ease-out;
+      width: 0%;
+    }
+
+    /* Result textarea */
+    .phy-ocr-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-secondary, #475569);
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .phy-ocr-confidence {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 8px;
+    }
+    .phy-ocr-confidence.high {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    .phy-ocr-confidence.medium {
+      background: #fef3c7;
+      color: #78350f;
+    }
+    .phy-ocr-confidence.low {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .phy-ocr-textarea {
+      width: 100%;
+      min-height: 100px;
+      border: 1.5px solid var(--border, #e2e8f0);
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 14px;
+      font-family: inherit;
+      resize: vertical;
+      outline: none;
+      background: var(--bg, #f8fafc);
+      color: var(--text, #1e293b);
+      line-height: 1.6;
+      transition: all 0.2s;
+    }
+    .phy-ocr-textarea:focus {
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
+    }
+
+    /* Buttons */
+    .phy-modal-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .phy-modal-actions button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .phy-btn-apply {
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    }
+    .phy-btn-apply:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(79, 70, 229, 0.4);
+    }
+    .phy-btn-apply:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .phy-btn-retry {
+      background: var(--border-light, #f1f5f9);
+      color: var(--text-secondary, #475569);
+      flex: 0 0 auto !important;
+      padding: 12px 16px !important;
+    }
+    [data-theme="dark"] .phy-btn-retry {
+      background: #334155;
+      color: #e2e8f0;
+    }
+    .phy-btn-retry:hover {
+      background: var(--border, #e2e8f0);
+    }
+
+    /* Advice box */
+    .phy-advice-box {
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      line-height: 1.6;
+      background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+      border-left: 4px solid #4f46e5;
+      color: #1e293b;
+      animation: phyFadeIn 0.3s;
+    }
+    [data-theme="dark"] .phy-advice-box {
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+      color: #e2e8f0;
+    }
+    .phy-advice-head {
+      font-size: 12px;
+      font-weight: 800;
+      color: #4f46e5;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    [data-theme="dark"] .phy-advice-head {
+      color: #a5b4fc;
+    }
+    .phy-advice-head svg {
+      width: 14px;
+      height: 14px;
+    }
+    .phy-advice-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .phy-advice-list li {
+      display: flex;
+      gap: 8px;
+      padding: 4px 0;
+      align-items: flex-start;
+    }
+    .phy-advice-list li::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #4f46e5;
+      margin-top: 8px;
+      flex-shrink: 0;
+    }
+    [data-theme="dark"] .phy-advice-list li::before {
+      background: #a5b4fc;
+    }

@@ -1,0 +1,226 @@
+/* ---------- STUDY / LEADERBOARD: warm paper pages ---------- */
+body {
+  background-color: #f5f0e3;
+}
+.main {
+  background: transparent;
+}
+.panel .page-title {
+  font-family: Georgia, "Songti TC", "Noto Serif TC", "Kaiti TC", serif;
+  font-size: 28px;
+  font-weight: 500;
+  letter-spacing: .025em;
+  line-height: 1.25;
+  color: #322b21;
+}
+.panel .page-title::before {
+  display: block;
+  margin-bottom: 5px;
+  color: #907b5e;
+  font-family: Georgia, "Songti TC", "Noto Serif TC", serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+#panel-practice .page-title::before { content: "第 一 章"; }
+#panel-formulas .page-title::before { content: "第 二 章"; }
+#panel-report .page-title::before { content: "第 三 章"; }
+#panel-library .page-title::before { content: "第 四 章"; }
+#panel-leaderboard .page-title::before { content: "第 五 章"; }
+.panel .page-subtitle { color: #7a6a54; }
+
+/* Paper cards */
+.card,
+.question,
+.stat,
+.lib-card,
+.formula-group,
+.phy-lb-card,
+.phy-lb-stat {
+  background: #ffffff;
+  border-color: #e2d7c2;
+  box-shadow: 0 3px 12px rgba(80, 60, 35, .07), inset 0 1px 0 rgba(255, 255, 255, .7);
+}
+.card {
+  border-radius: 6px 12px 7px 10px;
+}
+.question {
+  border-radius: 6px 12px 7px 10px;
+}
+.question::before {
+  background: linear-gradient(180deg, #3a3226 0%, #a18b6c 100%);
+}
+.stat,
+.lib-card,
+.formula-group,
+.phy-lb-card,
+.phy-lb-stat {
+  border-radius: 5px 10px 6px 9px;
+}
+[data-theme="dark"] .card,
+[data-theme="dark"] .question,
+[data-theme="dark"] .stat,
+[data-theme="dark"] .lib-card,
+[data-theme="dark"] .formula-group,
+[data-theme="dark"] .phy-lb-card,
+[data-theme="dark"] .phy-lb-stat {
+  background: #2c251f;
+  border-color: #4a3f32;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, .24), inset 0 1px 0 rgba(255, 255, 255, .04);
+}
+
+/* Ink controls */
+.chip {
+  background: #ffffff;
+  border-color: #d9cdb8;
+  color: #4d4234;
+}
+.chip:hover { border-color: #9b7b4c; }
+.chip.selected {
+  background: #efe6d2;
+  border-color: #3a3226;
+  color: #3a3226;
+  box-shadow: none;
+}
+input[type="range"] { background: #d8ccb6; }
+input[type="range"]::-webkit-slider-thumb {
+  background: #3a3226;
+  box-shadow: 0 0 0 1px #3a3226, 0 2px 5px rgba(58, 50, 38, .18);
+  border-color: #f5f0e3;
+}
+input[type="range"]::-moz-range-thumb {
+  background: #3a3226;
+  border-color: #f5f0e3;
+}
+.range-val { color: #3a3226; }
+#countLbl, #tplCount { color: #3a3226 !important; }
+
+/* Ink buttons; no purple gradients / glow */
+.btn-primary,
+.btn-grade {
+  background: #3a3226;
+  border: 1px solid #3a3226;
+  color: #f8f1df;
+  box-shadow: 0 4px 12px rgba(58, 50, 38, .18);
+}
+.btn-primary:hover,
+.btn-grade:hover {
+  background: #4a4031;
+  border-color: #4a4031;
+  box-shadow: 0 6px 16px rgba(58, 50, 38, .22);
+}
+.btn-ghost {
+  background: #efe6d2;
+  border: 1px solid #d2c6b0;
+  color: #3a3226;
+}
+.btn-ghost:hover { background: #e5d9c0; border-color: #9b7b4c; color: #3a3226; }
+.btn-danger { background: #7a3e2e; color: #f8f1df; }
+.btn-danger:hover { background: #603024; color: #fff; }
+
+/* Text and accents */
+.section-label,
+.badge-topic,
+.q-timer,
+.stat-label,
+.phy-lb-when,
+.phy-lb-score-max { color: #7a6a54; }
+.badge-topic { background: #f0e7d4; }
+[data-theme="dark"] .badge-topic { background: #3a3128; }
+.badge-num { background: #3a3226; color: #f8f1df; }
+.badge-marks { background: #efe6d2; color: #6f4e32; }
+[data-theme="dark"] .badge-marks { background: #3a3128; color: #e0b47b; }
+.q-text,
+.score-meta .score-pts,
+.stat-num,
+.lib-topic,
+.formula-group h3,
+.phy-lb-topic { color: #322b21; }
+.formula-group h3 { color: #4a4031; }
+.formula-eq { background: #efe6d2; color: #3a3226; }
+[data-theme="dark"] .formula-eq { background: #3a3128; color: #e8d8b9; }
+.lib-count { background: #efe6d2; color: #3a3226; }
+.stat-icon { background: #efe6d2; color: #3a3226; }
+[data-theme="dark"] .stat-icon { background: #3a3128; color: #e8d8b9; }
+.phy-lb-score,
+.phy-lb-stat-num { color: #3a3226; }
+.phy-lb-rank { background: #efe6d2; color: #6f6049; }
+.phy-lb-row { border-color: #ede4d3; }
+[data-theme="dark"] .phy-lb-row { border-color: #4a3f32; }
+textarea { background: #faf6ec; border-color: #d2c6b0; color: #322b21; }
+textarea:focus { border-color: #3a3226; background: #fff; box-shadow: 0 0 0 3px #e5d9c0; }
+[data-theme="dark"] textarea { background: #2c251f; border-color: #4a3f32; color: #e8ddc7; }
+[data-theme="dark"] textarea:focus { background: #322a22; border-color: #d9c7a8; box-shadow: 0 0 0 3px #4a3f32; }
+
+/* Paper tab bar */
+.tabbar {
+  background: #f5f0e3;
+  border-top-color: #d2c6b0;
+  box-shadow: 0 -3px 14px rgba(80, 60, 35, .06);
+}
+.tab-btn.active { color: #3a3226; }
+.tab-btn.active::before { background: #3a3226; }
+
+/* Dark paper */
+html[data-theme="dark"] body { background-color: #241f1a; }
+html[data-theme="dark"] .panel .page-title { color: #f0e3ca; }
+html[data-theme="dark"] .panel .page-title::before { color: #b9a88a; }
+html[data-theme="dark"] .panel .page-subtitle { color: #b9aa91; }
+html[data-theme="dark"] .chip {
+  background: #2c251f;
+  border-color: #4a3f32;
+  color: #e8ddc7;
+}
+html[data-theme="dark"] .chip.selected {
+  background: #3a3128;
+  border-color: #d9c7a8;
+  color: #f0e3ca;
+  box-shadow: none;
+}
+html[data-theme="dark"] input[type="range"] { background: #4b3f32; }
+html[data-theme="dark"] input[type="range"]::-webkit-slider-thumb {
+  background: #d9c7a8;
+  border-color: #2c251f;
+  box-shadow: 0 0 0 1px #d9c7a8, 0 2px 5px rgba(0, 0, 0, .35);
+}
+html[data-theme="dark"] input[type="range"]::-moz-range-thumb { background: #d9c7a8; border-color: #2c251f; }
+html[data-theme="dark"] .range-val,
+html[data-theme="dark"] #countLbl,
+html[data-theme="dark"] #tplCount { color: #e8d8b9 !important; }
+html[data-theme="dark"] .btn-primary,
+html[data-theme="dark"] .btn-grade {
+  background: #d9c7a8;
+  border-color: #d9c7a8;
+  color: #2c251f;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .28);
+}
+html[data-theme="dark"] .btn-primary:hover,
+html[data-theme="dark"] .btn-grade:hover { background: #e5d6bd; border-color: #e5d6bd; }
+html[data-theme="dark"] .btn-ghost { background: #3a3128; border-color: #4a3f32; color: #e8ddc7; }
+html[data-theme="dark"] .btn-ghost:hover { background: #4a3f32; border-color: #6a5843; color: #fff; }
+html[data-theme="dark"] .btn-danger { background: #7a3e2e; color: #f8f1df; }
+html[data-theme="dark"] .section-label,
+html[data-theme="dark"] .badge-topic,
+html[data-theme="dark"] .q-timer,
+html[data-theme="dark"] .stat-label,
+html[data-theme="dark"] .phy-lb-when,
+html[data-theme="dark"] .phy-lb-score-max { color: #b9aa91; }
+html[data-theme="dark"] .badge-topic { background: #3a3128; }
+html[data-theme="dark"] .badge-num { background: #d9c7a8; color: #2c251f; }
+html[data-theme="dark"] .badge-marks { background: #3a3128; color: #e0b47b; }
+html[data-theme="dark"] .q-text,
+html[data-theme="dark"] .score-meta .score-pts,
+html[data-theme="dark"] .stat-num,
+html[data-theme="dark"] .lib-topic,
+html[data-theme="dark"] .formula-group h3,
+html[data-theme="dark"] .phy-lb-topic { color: #f0e3ca; }
+html[data-theme="dark"] .formula-eq { background: #3a3128; color: #e8d8b9; }
+html[data-theme="dark"] .lib-count { background: #3a3128; color: #e8d8b9; }
+html[data-theme="dark"] .stat-icon { background: #3a3128; color: #e8d8b9; }
+html[data-theme="dark"] .phy-lb-score,
+html[data-theme="dark"] .phy-lb-stat-num { color: #e8d8b9; }
+html[data-theme="dark"] .phy-lb-rank { background: #3a3128; color: #c7b89d; }
+html[data-theme="dark"] .tabbar { background: #241f1a; border-top-color: #4a3f32; }
+html[data-theme="dark"] .tab-btn.active { color: #f0e3ca; }
+html[data-theme="dark"] .tab-btn.active::before { background: #d9c7a8; }
