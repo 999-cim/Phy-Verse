@@ -226,3 +226,94 @@ html[data-theme="light"] body:has(.phyexp-root) #phyFirebaseLogin:hover {
   background: rgba(255, 255, 255, 0.22) !important;
   border-color: rgba(255, 255, 255, 0.36) !important;
 }
+
+/* Header-aligned Firebase chip: match the 36 px home/theme icon buttons. */
+#phyFirebaseAuthBar {
+  top: 12px !important;
+  right: 16px !important;
+  height: 36px !important;
+  align-items: center !important;
+}
+#phyFirebaseAuthBar > * { min-width: 0; }
+#phyFirebaseLogin {
+  height: 36px !important;
+  min-height: 36px !important;
+  padding: 0 12px !important;
+  box-sizing: border-box;
+}
+#phyFirebaseAuthBar .phy-auth-chip {
+  height: 36px !important;
+  min-height: 36px !important;
+  padding: 0 2px !important;
+  box-sizing: border-box;
+  max-width: 240px;
+}
+#phyFirebaseAuthBar .phy-auth-avatar,
+#phyFirebaseAuthBar .phy-auth-avatar img {
+  width: 26px !important;
+  height: 26px !important;
+  min-width: 26px !important;
+  border-radius: 50% !important;
+  object-fit: cover;
+}
+#phyFirebaseAuthBar .phy-auth-email {
+  max-width: 120px !important;
+  min-width: 0 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  display: block;
+  flex: 0 1 120px;
+}
+#phyFirebaseAuthBar .phy-auth-logout {
+  height: 26px !important;
+  min-height: 26px !important;
+  padding: 0 9px !important;
+  border-radius: 999px !important;
+  font-size: 11px !important;
+  line-height: 1 !important;
+  flex: 0 0 auto;
+}
+
+/* Reserve enough width for avatar + truncated email + logout. */
+#phylabToolbar { right: 244px !important; }
+body:has(.phyexp-root) .phylab-lab-actions { margin-right: 260px !important; }
+body:has(.phyexp-root) .header-actions { margin-right: 260px !important; }
+body:has(#phylabLauncher:not(.hidden)) .header-actions { margin-right: 260px !important; }
+
+/* Compact on phones: avatar + logout only. */
+@media (max-width: 767px) {
+  #phyFirebaseAuthBar .phy-auth-email { display: none !important; }
+  #phyFirebaseAuthBar .phy-auth-chip { max-width: none; }
+  #phylabToolbar { right: 112px !important; }
+  body:has(.phyexp-root) .phylab-lab-actions { margin-right: 122px !important; }
+  body:has(.phyexp-root) .header-actions { margin-right: 122px !important; }
+  body:has(#phylabLauncher:not(.hidden)) .header-actions { margin-right: 122px !important; }
+}
+
+/* Logged-in chip must be glass too (the base chip is paper-white). */
+body:has(.phyexp-root) #phyFirebaseAuthBar .phy-auth-chip,
+body:has(#phylabLauncher:not(.hidden)) #phyFirebaseAuthBar .phy-auth-chip {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  border-radius: 999px !important;
+  padding: 0 9px !important;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12) !important;
+}
+body:has(.phyexp-root) #phyFirebaseAuthBar .phy-auth-avatar,
+body:has(#phylabLauncher:not(.hidden)) #phyFirebaseAuthBar .phy-auth-avatar {
+  background: rgba(255,255,255,.9) !important;
+  color: #4b3d2c !important;
+}
+body:has(.phyexp-root) #phyFirebaseAuthBar .phy-auth-email,
+body:has(#phylabLauncher:not(.hidden)) #phyFirebaseAuthBar .phy-auth-email {
+  color: #ffffff !important;
+}
+body:has(.phyexp-root) #phyFirebaseAuthBar .phy-auth-logout,
+body:has(#phylabLauncher:not(.hidden)) #phyFirebaseAuthBar .phy-auth-logout {
+  color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,.24) !important;
+  background: rgba(255,255,255,.1) !important;
+}
