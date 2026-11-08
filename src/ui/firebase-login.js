@@ -3,6 +3,15 @@ import { auth, googleProvider, isFirebaseConfigured } from '../core/firebase.js'
 
 const BAR_ID = 'phyFirebaseAuthBar';
 let unsubscribe = null;
+let currentUser = null;
+let langHooked = false;
+
+function isEnglish() {
+  return !!((window.PhyVerse && window.PhyVerse.lang === 'en') || document.documentElement.lang === 'en');
+}
+
+function googleLoginLabel() { return isEnglish() ? 'Sign in with Google' : '使用 Google 登入'; }
+function signOutLabel() { return isEnglish() ? 'Sign out' : '登出'; }
 
 function ensureBar() {
   const header = document.getElementById('phy-header');
@@ -31,6 +40,7 @@ function googleIcon() {
 }
 
 function render(user) {
+  currentUser = user;
   const bar = ensureBar();
   if (!bar) return;
   bar.replaceChildren();
@@ -71,7 +81,7 @@ function render(user) {
 
     const out = document.createElement('button');
     out.type = 'button';
-    out.textContent = '登出';
+    out.textContent = signOutLabel();
     out.style.cssText = 'border:1px solid rgba(70,55,38,.28);border-radius:999px;background:#fbf5e8;color:#5b4b36;padding:5px 11px;font:600 12px Inter,ui-sans-serif,sans-serif;cursor:pointer;';
     out.addEventListener('click', async () => {
       out.disabled = true;
@@ -86,7 +96,7 @@ function render(user) {
   const btn = document.createElement('button');
   btn.id = 'phyFirebaseLogin';
   btn.type = 'button';
-  btn.innerHTML = `${googleIcon()}<span style="margin-left:6px">使用 Google 登入</span>`;
+  btn.innerHTML = `${googleIcon()}<span style="margin-left:6px">${googleLoginLabel()}</span>`;
   btn.style.cssText = 'display:inline-flex;align-items:center;border:1px solid rgba(70,55,38,.3);border-radius:999px;background:#fffaf0;color:#4b4236;padding:6px 12px;font:600 12px Inter,ui-sans-serif,sans-serif;cursor:pointer;box-shadow:0 1px 0 rgba(70,55,38,.08);';
   btn.addEventListener('click', async () => {
     btn.disabled = true;
@@ -104,6 +114,10 @@ function render(user) {
 }
 
 export function initFirebaseAuth() {
+  if (!langHooked && window.PhyVerse && typeof window.PhyVerse.onLangChange === 'function') {
+    window.PhyVerse.onLangChange(() => render(currentUser));
+    langHooked = true;
+  }
   const bar = ensureBar();
   if (!bar) return;
 

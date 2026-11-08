@@ -27,5 +27,24 @@
   <div id="phylab-root"></div>
 
   <script type="module" src="/src/main.js"></script>
+  <script>
+    (function () {
+      function syncTitle() {
+        var en = !!((window.PhyVerse && window.PhyVerse.lang === 'en') || document.documentElement.lang === 'en');
+        document.title = en ? 'PhyVerse - Interactive HKDSE Physics' : 'PhyVerse — 香港中學物理科一站式互動學習平台';
+      }
+      syncTitle();
+      function attach() {
+        if (window.PhyVerse && typeof window.PhyVerse.onLangChange === 'function') {
+          syncTitle();
+          window.PhyVerse.onLangChange(syncTitle);
+        } else {
+          setTimeout(attach, 50);
+        }
+      }
+      attach();
+    })();
+  </script>
+
 </body>
 </html>
