@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="data:," />
   <meta name="theme-color" content="#4f46e5" />
   <meta name="description" content="PhyVerse 隱私政策：Google 登入資料用途、練習記錄同步與資料分享說明。" />
   <title>隱私政策 — PhyVerse</title>
@@ -263,5 +264,71 @@
     <span>PhyVerse v3.0 · HKDSE Physics Learning</span>
     <span><a href="/">返回主頁</a> · <a href="/privacy.html">隱私政策</a></span>
   </footer>
+
+  <script>
+    (function () {
+      if (localStorage.getItem('phy_lang_v2') !== 'en') return;
+      document.documentElement.lang = 'en';
+      document.title = 'Privacy Policy — PhyVerse';
+      const desc = document.querySelector('meta[name="description"]');
+      if (desc) desc.setAttribute('content', 'PhyVerse privacy policy: Google sign-in data, practice-record sync and data sharing.');
+      const back = document.querySelector('.back-link');
+      if (back) back.textContent = '← Back home';
+      const main = document.querySelector('main');
+      if (!main) return;
+      main.innerHTML = `
+        <p class="eyebrow">PRIVACY</p>
+        <h1>Privacy Policy</h1>
+        <p class="updated">Last updated: 4 November 2026</p>
+        <article class="policy-card">
+          <p class="lead">PhyVerse is a free HKDSE physics learning tool. You can use it without signing in. We only process the account data below when you choose “Sign in with Google”.</p>
+          <section aria-labelledby="collect">
+            <h2 id="collect">1. What data we collect</h2>
+            <p>When you sign in with Google, we only receive basic Google account information:</p>
+            <ul>
+              <li><strong>Email address</strong>: to identify your account and show your signed-in identity.</li>
+              <li><strong>Profile photo</strong>: to display your account after sign-in.</li>
+              <li><strong>Display name</strong> (if provided by Google): for account display only.</li>
+            </ul>
+            <p>We <strong>never</strong> receive your Google password and never ask you to enter it.</p>
+            <p>To provide cross-device sync, we also process learning data you choose to create:</p>
+            <ul>
+              <li>Practice records: topic, score, question count, time used and timestamps.</li>
+              <li>Experiment scores: experiment name, score and timestamps.</li>
+            </ul>
+          </section>
+          <section aria-labelledby="use">
+            <h2 id="use">2. How we use data</h2>
+            <p>This data is used only to:</p>
+            <ul>
+              <li><strong>Sign you in and verify your identity</strong>: complete Google OAuth sign-in and keep you signed in.</li>
+              <li><strong>Sync across devices</strong>: sync your practice records and experiment scores to your account so you can continue on another device.</li>
+            </ul>
+            <p>We do not build advertising profiles or use your learning data for marketing or behavioural tracking.</p>
+            <span class="pill">Sign-in</span>
+            <span class="pill">Cross-device sync</span>
+          </section>
+          <section aria-labelledby="sharing">
+            <h2 id="sharing">3. Advertising and third-party sharing</h2>
+            <p>PhyVerse <strong>does not</strong> use your personal data for advertising and <strong>does not</strong> sell, rent or share it with advertisers, data brokers or other third parties for marketing.</p>
+            <p>To operate the service, sign-in is provided by Google OAuth and the site and account data are hosted by Netlify. These providers process data only as needed to provide sign-in and hosting, and are bound by their own privacy policies.</p>
+          </section>
+          <section aria-labelledby="storage">
+            <h2 id="storage">4. Storage and deletion</h2>
+            <p>When you are signed out, practice records and experiment scores are stored only in your browser's localStorage and are not uploaded. After sign-in, this data is synced to the private user-data fields of your account. Signing out does not automatically delete local data.</p>
+            <p>To request access to or deletion of your account and cloud data, contact us through the project's <a href="https://github.com/999-cim/Phy-Verse/issues" target="_blank" rel="noopener noreferrer">GitHub Issues</a>.</p>
+          </section>
+          <section aria-labelledby="contact">
+            <h2 id="contact">5. Contact</h2>
+            <p>If you have questions about this policy, please open an Issue in the <a href="https://github.com/999-cim/Phy-Verse/issues" target="_blank" rel="noopener noreferrer">PhyVerse GitHub project</a>.</p>
+          </section>
+          <p class="notice"><strong>Short version:</strong> We use only basic Google account data for sign-in; it is used only to sync your practice records and experiment scores; it is never used for advertising or sold to third parties.</p>
+        </article>`;
+      const footerLinks = document.querySelectorAll('.site-footer a');
+      if (footerLinks[0]) footerLinks[0].textContent = 'Back home';
+      if (footerLinks[1]) footerLinks[1].textContent = 'Privacy Policy';
+    })();
+  </script>
+
 </body>
 </html>

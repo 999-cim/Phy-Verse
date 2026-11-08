@@ -1539,7 +1539,13 @@ import { marksKey } from '../core/storage.js';
         +   '</div>'
         +   '<h2>' + T(currentExp.title) + '</h2>'
         + '</div>';
-      sb.innerHTML = pageHead + html;
+      sb.className = 'sidebar-manual notebook-sheet ruled note-scroll';
+      sb.style.paddingLeft = '58px';
+      sb.innerHTML = ''
+        + '<div class="notebook-hole" aria-hidden="true"><i></i><i></i></div>'
+        + '<div class="notebook-margin" aria-hidden="true"></div>'
+        + '<div class="notebook-tape" aria-hidden="true"></div>'
+        + pageHead + html;
       if (typeof currentExp.bindSidebar === 'function') currentExp.bindSidebar.call(currentExp, sb);
     }
 

@@ -117,6 +117,17 @@ export function defaultPreviewSVG(exp, index) {
     + '</svg>';
 }
 
+function applyBookChrome(en = isEn()) {
+  const title = el('phylabBookTitle');
+  const toc = el('phylabBookTocLabel');
+  const hint = el('phylabBookHint');
+  const back = el('phylabBookBack');
+  if (title) title.textContent = en ? 'Physics Book' : '物理之書';
+  if (toc) toc.textContent = en ? 'Table of Contents' : '全書目錄';
+  if (hint) hint.textContent = en ? 'Flip through the pages, choose an experiment to start' : '逐頁翻閱，選一個實驗開始';
+  if (back) back.textContent = en ? 'Back to Launcher' : '返回啟動器';
+}
+
 export function renderSelector() {
   const grid = el('phylabExpGrid');
   if (!grid) return;
@@ -232,15 +243,15 @@ function initSelectorShell() {
       <div class="phylab-book" id="phylabBook">
         <header class="phylab-book-head">
           <p class="phylab-book-kicker">PHYVERSE · 3D PHYSICS LAB</p>
-          <h2 class="phylab-book-title">物理之書</h2>
+          <h2 class="phylab-book-title" id="phylabBookTitle">物理之書</h2>
           <p class="phylab-book-sub">
-            <span>全書目錄 · <span id="phylabBookCount">15 個實驗</span></span>
-            <span>逐頁翻閱，選一個實驗開始</span>
+            <span><span id="phylabBookTocLabel">全書目錄</span> · <span id="phylabBookCount">15 個實驗</span></span>
+            <span id="phylabBookHint">逐頁翻閱，選一個實驗開始</span>
           </p>
         </header>
         <div class="phylab-book-toc" id="phylabExpGrid"></div>
         <footer class="phylab-book-foot">
-          <button class="phylab-bookmark" data-phylab-nav="launcher" type="button">返回啟動器</button>
+          <button class="phylab-bookmark" data-phylab-nav="launcher" type="button" id="phylabBookBack">返回啟動器</button>
           <span class="phylab-book-folio">PhyVerse · 3D Lab · 2026</span>
         </footer>
       </div>
@@ -299,6 +310,7 @@ function bindNav() {
 
 export function initSelector() {
   initSelectorShell();
+  applyBookChrome();
   bindNav();
 
   if (window.PhyVerse) {
@@ -306,6 +318,7 @@ export function initSelector() {
     window.PhyVerse.closeExperiment = closeExperiment;
     window.PhyVerse.renderSelector = renderSelector;
     window.PhyVerse.onLangChange((v) => {
+      applyBookChrome(v === 'en');
       const sel = el('phylabSelector');
       if (sel && !sel.classList.contains('hidden')) renderSelector();
       if (window.__currentExp) {
