@@ -112,3 +112,117 @@
 }
 
 .phy-auth-bar.is-hidden { display: none; }
+
+/* Firebase auth: glass treatment over the starfield / paper lab.
+   Selectors override the component's inline fallback styles without changing logic. */
+#phyFirebaseAuthBar {
+  background: transparent !important;
+  border-bottom: 0 !important;
+}
+
+#phyFirebaseLogin {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12) !important;
+  transition: background 160ms ease, border-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+}
+#phyFirebaseLogin span { color: #ffffff !important; }
+#phyFirebaseLogin:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.32) !important;
+  transform: scale(1.02);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.18) !important;
+}
+#phyFirebaseLogin:active { transform: scale(0.99); }
+#phyFirebaseLogin:disabled { opacity: .6 !important; transform: none; }
+
+/* Inside the paper-light lab, invert the glass to a subtle ink tint. */
+html[data-theme="light"] body:has(.phyexp-root) #phyFirebaseLogin {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+  color: #1e293b !important;
+  box-shadow: 0 4px 16px rgba(70, 55, 38, 0.08) !important;
+}
+html[data-theme="light"] body:has(.phyexp-root) #phyFirebaseLogin span { color: #1e293b !important; }
+html[data-theme="light"] body:has(.phyexp-root) #phyFirebaseLogin:hover {
+  background: rgba(0, 0, 0, 0.1) !important;
+  border-color: rgba(0, 0, 0, 0.18) !important;
+}
+
+/* Keep the signed-in identity readable on the dark landing screen. */
+body:has(#phylabLauncher:not(.hidden)) #phyFirebaseAuthBar .phy-auth-email { color: #f8fafc !important; }
+body:has(#phylabLauncher:not(.hidden)) #phyFirebaseAuthBar .phy-auth-logout {
+  color: #f8fafc !important;
+  border-color: rgba(255,255,255,.22) !important;
+  background: rgba(255,255,255,.08) !important;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+/* Fixed top-right placement: sit on the same horizontal line as the
+   launcher / lab top controls, with room reserved for the glass chip. */
+#phyFirebaseAuthBar {
+  position: fixed !important;
+  top: 16px !important;
+  right: 16px !important;
+  left: auto !important;
+  width: auto !important;
+  min-height: 0 !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  z-index: 9999 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  pointer-events: none !important;
+}
+#phyFirebaseAuthBar > * { pointer-events: auto !important; }
+
+/* Reserve a gap for the auth chip without moving the 3D view controls. */
+#phylabToolbar { right: 172px !important; }
+body:has(.phyexp-root) .phylab-lab-actions { margin-right: 160px !important; }
+body:has(.phyexp-root) .header-actions { margin-right: 172px !important; }
+
+/* Keep the launcher's small top-right controls clear of the auth chip. */
+body:has(#phylabLauncher:not(.hidden)) .header-actions { margin-right: 172px !important; }
+
+/* The auth chip must not block the 3D view switch below it. */
+.phyexp-root #view-switch { z-index: 30; }
+
+/* The lab header itself is dark even when the paper lab is light; keep the
+   fixed top-right chip readable on that header rather than using dark ink. */
+body:has(.phyexp-root) #phyFirebaseLogin {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.24) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.16) !important;
+}
+body:has(.phyexp-root) #phyFirebaseLogin span { color: #ffffff !important; }
+body:has(.phyexp-root) #phyFirebaseLogin:hover {
+  background: rgba(255, 255, 255, 0.22) !important;
+  border-color: rgba(255, 255, 255, 0.36) !important;
+}
+body:has(.phyexp-root) #phyFirebaseAuthBar .phy-auth-email { color: #f8fafc !important; }
+body:has(.phyexp-root) #phyFirebaseAuthBar .phy-auth-logout {
+  color: #f8fafc !important;
+  border-color: rgba(255,255,255,.24) !important;
+  background: rgba(255,255,255,.1) !important;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+/* Same specificity as the earlier light-theme rule, but wins by source order. */
+html[data-theme="light"] body:has(.phyexp-root) #phyFirebaseLogin {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.24) !important;
+  color: #ffffff !important;
+}
+html[data-theme="light"] body:has(.phyexp-root) #phyFirebaseLogin span { color: #ffffff !important; }
+html[data-theme="light"] body:has(.phyexp-root) #phyFirebaseLogin:hover {
+  background: rgba(255, 255, 255, 0.22) !important;
+  border-color: rgba(255, 255, 255, 0.36) !important;
+}

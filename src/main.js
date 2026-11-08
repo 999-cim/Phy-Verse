@@ -6,7 +6,7 @@ import { initSelector, closeExperiment } from './ui/selector.js';
 import { initResultModal } from './ui/result-modal.js';
 import { initLeaderboard } from './ui/leaderboard.js';
 import { initToolbar } from './ui/toolbar.js';
-import { initAuthUI } from './ui/auth.js';
+import { initFirebaseAuth } from './ui/firebase-login.js';
 
 /** Application composition root. Keep initialization in the original part order. */
 function boot() {
@@ -17,7 +17,7 @@ function boot() {
   initResultModal({ onBack: closeExperiment });
   initLeaderboard();
   initToolbar();
-  initAuthUI();
+  initFirebaseAuth();
   startLabLoad();
 }
 
