@@ -46,9 +46,26 @@ export function initLauncher() {
           <span class="phylab-choice-tag">3D Simulator</span>
         </button>
       </div>
-      <div class="phylab-footer"><span>PhyVerse v3.0 - Free forever - No account needed</span><a class="phylab-privacy-link" href="/privacy.html">隐私政策</a></div>
+      <div class="phylab-footer"><span id="phylabFooterNote">PhyVerse v3.0 - Free forever - 無需帳號即可體驗 · 登入同步進度</span><a class="phylab-privacy-link" id="phylabPrivacyLink" href="/privacy.html">隱私政策</a></div>
     </div>`;
   root.appendChild(wrap);
+
+  function isEnglish() {
+    return !!((window.PhyVerse && window.PhyVerse.lang === 'en') || document.documentElement.lang === 'en');
+  }
+  function syncLauncherLanguage() {
+    const en = isEnglish();
+    const note = document.getElementById('phylabFooterNote');
+    const link = document.getElementById('phylabPrivacyLink');
+    if (note) note.textContent = en
+      ? 'PhyVerse v3.0 - Free forever - No account needed to try · Sign in to sync'
+      : 'PhyVerse v3.0 - Free forever - 無需帳號即可體驗 · 登入同步進度';
+    if (link) link.textContent = en ? 'Privacy Policy' : '隱私政策';
+  }
+  syncLauncherLanguage();
+  if (window.PhyVerse && typeof window.PhyVerse.onLangChange === 'function') {
+    window.PhyVerse.onLangChange(syncLauncherLanguage);
+  }
 
   const particles = document.getElementById('phylabParticles');
   if (particles) {
